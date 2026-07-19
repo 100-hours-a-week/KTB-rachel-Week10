@@ -1,0 +1,226 @@
+/* ============================================================
+   Post List Page — 게시글 전체 목록
+   ============================================================ */
+@import './tokens.css';
+
+.post-list-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, rgba(239 246 255 / 0.60) 0%, #ffffff 40%);
+  font-family: var(--font-sans);
+}
+
+.post-list-main {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-6);
+}
+
+/* 페이지 상단 */
+.post-list-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+
+.post-list-top__heading {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text-heading);
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-1);
+}
+
+.post-list-top__count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* 글쓰기 버튼 */
+.btn-write {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  transition:
+    background var(--transition-base),
+    transform var(--transition-fast),
+    box-shadow var(--transition-base);
+}
+
+.btn-write:hover {
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-write:active {
+  transform: scale(0.97);
+}
+
+/* 게시글 목록 */
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 게시글 카드 */
+.post-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--color-surface-muted);  /* white 60% */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-5);
+  cursor: pointer;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  font-family: var(--font-sans);
+  margin-bottom: 20px;
+}
+
+.post-card:hover {
+  background: var(--color-surface);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* 카드 상단 */
+.post-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.post-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 카테고리 배지 */
+.post-card__badge {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+
+  /* 기본값 — JS에서 data-category에 따라 클래스 교체 */
+  background: var(--blue-100);
+  color: var(--blue-700);
+}
+
+.post-card__badge--career     { background: #dbeafe; color: #1d4ed8; }
+.post-card__badge--frontend   { background: #e0e7ff; color: #4338ca; }
+.post-card__badge--side       { background: #cffafe; color: #0e7490; }
+.post-card__badge--culture    { background: #e0f2fe; color: #0369a1; }
+.post-card__badge--database   { background: var(--blue-50); color: var(--blue-700); }
+.post-card__badge--growth     { background: #ede9fe; color: #6d28d9; }
+
+/* 제목 */
+.post-card__title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+  margin: 0 0 var(--space-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color var(--transition-base);
+}
+
+.post-card:hover .post-card__title {
+  color: var(--color-primary);
+}
+
+/* 미리보기 텍스트 */
+.post-card__preview {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+/* 카드 하단 메타 */
+.post-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--blue-50);
+}
+
+.post-card__author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.post-card__avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+  background: var(--blue-200);
+  color: var(--blue-700);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-card__author-name {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-body);
+}
+
+.post-card__dot {
+  color: #cbd5e1;
+  font-size: var(--font-size-xs);
+}
+
+.post-card__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.post-card__stats {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.post-card__stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}

@@ -1,0 +1,212 @@
+/* ============================================================
+   Header — .global-header
+   HTML 구조 (index.html IDs/클래스 엄격 준수)
+   #headerBackBtn  #headerProfileBtn  #headerDropdownMenu
+   #menuEditInfo   #menuEditPwd       #menuLogout
+   ============================================================ */
+@import "./tokens.css";
+
+/* ── 헤더 루트 ── */
+.global-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255 255 255 / 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ── 내부 컨테이너 ── */
+.header-container {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* ── 뒤로가기 버튼 (#headerBackBtn) ── */
+.btn-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background var(--transition-base),
+    color var(--transition-base);
+}
+
+.btn-back:hover {
+  background: var(--blue-50);
+  color: var(--color-primary);
+}
+
+.btn-back:active {
+  background: var(--blue-100);
+}
+
+/* ── 헤더 타이틀 ── */
+.header-title {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-heading);
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-align: center;
+  /* 양쪽 버튼에 밀리지 않도록 */
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── 프로필 래퍼 (#headerProfileBtn 부모) ── */
+.header-profile-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── 프로필 버튼 (#headerProfileBtn) ── */
+.btn-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.btn-profile:hover {
+  border-color: var(--blue-200);
+  box-shadow: 0 0 0 3px rgba(29 78 216 / 0.10);
+}
+
+.btn-profile:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(29 78 216 / 0.18);
+}
+
+/* 프로필 이미지 (.profile-img) */
+.profile-img {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  display: block;
+}
+
+/* ── 드롭다운 메뉴 (#headerDropdownMenu) ── */
+.header-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  min-width: 10rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-1) 0;
+  list-style: none;
+  margin: 0;
+
+  /* 표시 상태 (기본) */
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity var(--transition-base),
+    visibility var(--transition-base),
+    transform var(--transition-base);
+}
+
+/* .hidden 클래스가 붙으면 닫힘 (JS에서 toggle) */
+.header-dropdown.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
+}
+
+/* 드롭다운 각 항목 */
+.header-dropdown li {
+  display: block;
+}
+
+/* 드롭다운 버튼 공통 */
+.header-dropdown li button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-body);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+/* 회원정보수정 (#menuEditInfo) */
+#menuEditInfo:hover {
+  color: var(--color-primary);
+  background: var(--blue-50);
+}
+
+/* 비밀번호수정 (#menuEditPwd) */
+#menuEditPwd:hover {
+  color: var(--color-primary);
+  background: var(--blue-50);
+}
+
+/* 드롭다운 구분선 — 로그아웃 위 */
+#menuLogout {
+  color: var(--color-text-body);
+}
+
+.header-dropdown li:last-child {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+}
+
+/* 로그아웃 (#menuLogout) */
+#menuLogout:hover {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+/* ── 반응형 ── */
+@media (max-width: 640px) {
+  .header-container {
+    padding: 0 var(--space-4);
+  }
+
+  .header-title {
+    font-size: var(--font-size-base);
+  }
+}
