@@ -62,6 +62,7 @@ export default function Header({ user, setIsLoggedIn }) {
         >
           <div className="w-8 h-8 rounded-lg bg-blue-700 flex items-center justify-center">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              {/* fill-opacity -> fillOpacity 수정 */}
               <path
                 d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7a1.5 1.5 0 01-1.5 1.5H9l-1 2-1-2H3.5A1.5 1.5 0 012 10.5v-7z"
                 fill="white"

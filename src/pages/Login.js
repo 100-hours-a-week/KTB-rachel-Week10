@@ -104,8 +104,8 @@ export default function Login() {
                     <li className="login-panel__feature">
                         <div className="login-panel__feature-icon">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M10 2L3 6v4c0 4 3.5 7.5 7 8 3.5-.5 7-4 7-8V6l-7-4z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.8)" stroke-width="1.4" stroke-linejoin="round" />
-                                <path d="M7 10l2 2 4-4" stroke="rgba(255,255,255,0.9)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M10 2L3 6v4c0 4 3.5 7.5 7 8 3.5-.5 7-4 7-8V6l-7-4z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.8)" strokeWidth="1.4" strokeLinejoin="round" />
+                                <path d="M7 10l2 2 4-4" stroke="rgba(255,255,255,0.9)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </div>
                         <div>
@@ -118,8 +118,8 @@ export default function Login() {
                     <li className="login-panel__feature">
                         <div className="login-panel__feature-icon">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <circle cx="10" cy="10" r="7.5" stroke="rgba(255,255,255,0.8)" stroke-width="1.4" />
-                                <path d="M6.5 10a3.5 3.5 0 007 0" stroke="rgba(255,255,255,0.9)" stroke-width="1.4" stroke-linecap="round" />
+                                <circle cx="10" cy="10" r="7.5" stroke="rgba(255,255,255,0.8)" strokeWidth="1.4" />
+                                <path d="M6.5 10a3.5 3.5 0 007 0" stroke="rgba(255,255,255,0.9)" strokeWidth="1.4" strokeLinecap="round" />
                                 <circle cx="7.5" cy="8" r="1" fill="rgba(255,255,255,0.9)" />
                                 <circle cx="12.5" cy="8" r="1" fill="rgba(255,255,255,0.9)" />
                             </svg>
@@ -134,7 +134,7 @@ export default function Login() {
                     <li className="login-panel__feature">
                         <div className="login-panel__feature-icon">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M4 10h12M10 4l6 6-6 6" stroke="rgba(255,255,255,0.9)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M4 10h12M10 4l6 6-6 6" stroke="rgba(255,255,255,0.9)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </div>
                         <div>
@@ -155,13 +155,13 @@ export default function Login() {
                 <h2 className="login-form-area__title">로그인</h2>
                 <p className="login-form-area__subtitle">계정 정보를 입력하세요.</p>
                 
-                <form id="loginForm" className="login-form">
+                <form id="loginForm" className="login-form" onSubmit={handleSubmit}>
                     <InputField
                         label="이메일"
                         type="email"
                         id="emailInput"
                         placeholder="example@email.com"
-                        autocomplete="off"
+                        autoComplete="off"
                         value={emailInput.value}
                         onChange={emailInput.onChange}
                         errorMessage={emailInput.error}
@@ -173,9 +173,10 @@ export default function Login() {
                         type="password"
                         id="passwordInput"
                         placeholder="8자 이상 입력하세요"
-                        autocomplete="new-password"
+                        autoComplete="new-password"
                         value={passwordInput.value}
-                        onChange={passwordInput.onChange}                            errorMessage={passwordInput.error}
+                        onChange={passwordInput.onChange}                            
+                        errorMessage={passwordInput.error}
                         helperText="영문, 숫자 조합 8자 이상 권장"
                     />
                     <button type="submit" id="loginSubmitBtn" className="btn-primary" disabled={!isFormValid || loading}>
@@ -192,7 +193,5 @@ export default function Login() {
             </div>
         </div>
     </div>
-
     );
-
 }

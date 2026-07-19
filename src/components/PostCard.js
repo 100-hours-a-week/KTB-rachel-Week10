@@ -12,7 +12,6 @@ export default function PostCard({post, handleClick}) {
 
     const avatarInitial = post.nickname ? post.nickname.charAt(0) : 'User';
 
-
     return (
         <article 
             className="post-card" 
@@ -47,7 +46,8 @@ export default function PostCard({post, handleClick}) {
                     <span className="post-card__stat">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                             <path d="M1 6C1 6 2.5 2 6 2s5 4 5 4-1.5 4-5 4-5-4-5-4z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-                            <circle cx="6" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2" />
+                            {/* stroke-width -> strokeWidth 카멜케이스 수정 */}
+                            <circle cx="6" cy="6" r="1.5" stroke="currentColor" strokeWidth="1.2" />
                         </svg>
                         {post.viewCount || 0}
                     </span>

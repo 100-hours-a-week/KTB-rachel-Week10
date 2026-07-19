@@ -1,11 +1,11 @@
 import React from 'react';
 
-function InputField({ 
-  label, // 이게뭐야
-  type, // 이게뭐야
+export default function InputField({ 
+  label, 
+  type, 
   id, 
-  placeholder, // 이게뭐야
-  autocomplete, // 이게 뭐야
+  placeholder, 
+  autoComplete, 
   value, 
   onChange, 
   errorMessage, 
@@ -18,20 +18,19 @@ function InputField({
         {label}
       </label>
 
-      {/* 2. 입력창 영역 */}
+      {/* 2. 입력창 영역 (autoComplete로 리액트 표준 변경) */}
       <input
         type={type}
         id={id}
         className="field__input"
         placeholder={placeholder}
-        autoComplete={autocomplete}
+        autoComplete={autoComplete}
         value={value}
         onChange={onChange}
         required
       />
 
       {/* 3. 메시지 영역 */}
-      {/* 에러 메시지가 있다면 빨간색 에러 스타일로 보여주고, 없으면 기본 힌트 메시지를 보여줍니다. */}
       {errorMessage ? (
         <p className="field__helper field__helper--error" id={`${id}Helper`}>
           {errorMessage}
@@ -47,4 +46,3 @@ function InputField({
   );
 }
 
-export default InputField;

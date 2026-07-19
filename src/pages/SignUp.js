@@ -149,7 +149,7 @@ export default function SignUp() {
                     {/* 전체 조율을 하는 form 태그 */}
                     <form id="signupForm" className="signup-form" onSubmit={handleSubmit}>
                         
-                        {/* 프로필 이미지 업로드 영역 (필요시 컴포넌트 분리 가능, 우선 유지) */}
+                        {/* 프로필 이미지 업로드 영역 */}
                         <div className="profile-upload-group" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                             <div 
                                 className="profile-preview" 
@@ -167,7 +167,7 @@ export default function SignUp() {
                                 프로필 사진 선택
                             </label>
 
-                            {/* 💡 input 태그에 onChange 이벤트 연결 */}
+                            {/* input 태그에 onChange 이벤트 연결 */}
                             <input 
                                 type="file" 
                                 id="profileImgInput" 
@@ -179,13 +179,13 @@ export default function SignUp() {
                             <p className="field__helper field__helper--hint" id="profilImageHelper">*프로필 사진을 추가해주세요.</p>
                         </div>
 
-                        {/* 개별 입력 필드들 */}
+                        {/* 개별 입력 필드들 (autocomplete -> autoComplete 변경) */}
                         <InputField
                             label="이메일"
                             type="email"
                             id="emailInput"
                             placeholder="example@email.com"
-                            autocomplete="off"
+                            autoComplete="off"
                             value={emailInput.value}
                             onChange={emailInput.onChange}
                             errorMessage={emailInput.error}
@@ -197,7 +197,7 @@ export default function SignUp() {
                             type="password"
                             id="passwordInput"
                             placeholder="8자 이상 입력하세요"
-                            autocomplete="new-password"
+                            autoComplete="new-password"
                             value={passwordInput.value}
                             onChange={passwordInput.onChange}
                             errorMessage={passwordInput.error}
@@ -209,7 +209,7 @@ export default function SignUp() {
                             type="password"
                             id="passwordCheckInput" 
                             placeholder="비밀번호를 다시 입력하세요"
-                            autocomplete="new-password"
+                            autoComplete="new-password"
                             value={passwordCheckInput.value}
                             onChange={passwordCheckInput.onChange}
                             errorMessage={passwordCheckInput.error}
@@ -227,7 +227,7 @@ export default function SignUp() {
                             helperText="실명 또는 닉네임 (2자 이상)"
                         />
 
-                        {/* 가입하기 버튼: 클래스명 btn-primary로 수정 */}
+                        {/* 가입하기 버튼 */}
                         <button type="submit" id="signupSubmitBtn" className="btn-primary" disabled={!isFormValid || loading}>
                             {loading ? "가입 중..." : "회원가입"}
                         </button>

@@ -8,7 +8,6 @@ import '../css/user-edit.css';
 export default function UserInfoUpdate({ userId, user }) {
     const navigate = useNavigate();
     
-    // 1. 상태 관리 정의
     const [nickname, setNickname] = useState(user?.nickname || '스타트업코드');
     const [nicknameError, setNicknameError] = useState('');
     const [profileFile, setProfileFile] = useState(null);
@@ -16,26 +15,24 @@ export default function UserInfoUpdate({ userId, user }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
     
-    // PATCH 전송용 요청 트리거 상태
+    
     const [patchPayload, setPatchPayload] = useState(null);
-    // DELETE 전송용 요청 트리거 상태
     const [shouldDelete, setShouldDelete] = useState(false);
 
     const withdrawalDialogRef = useRef(null);
 
-    // 2. 실시간 닉네임 유효성 검사 (입력 시 작동)
+    // 실시간 닉네임 유효성 검사
     const handleNicknameChange = (e) => {
         const value = e.target.value;
         setNickname(value);
         
-        // 제공해주신 utils/validators.js의 함수 재사용
         const errorMsg = validateNickname(value);
         setNicknameError(errorMsg);
     };
 
     const isFormValid = nickname.trim() !== "" && !nicknameError;
 
-    // 3. API 통신 - 회원정보 수정 (PATCH)
+    // 회원정보 수정
     const { data: fetchedData, error: patchError } = useFetch(
         patchPayload ? `http://localhost:8080/users/${userId}` : null,
         {
@@ -47,7 +44,7 @@ export default function UserInfoUpdate({ userId, user }) {
         [patchPayload]
     );
 
-    // 4. API 통신 - 회원 탈퇴 (DELETE)
+    // 회원 탈퇴
     const { data: deleteData, error: deleteError } = useFetch(
         shouldDelete ? `http://localhost:8080/users/${userId}` : null,
         {
@@ -57,7 +54,7 @@ export default function UserInfoUpdate({ userId, user }) {
         [shouldDelete]
     );
 
-    // 5. 비즈니스 사이드 이펙트 처리 (성공/실패 토스트 및 알림)
+    // 비즈니스 사이드 이펙트 처리 (성공/실패 토스트 및 알림)
     useEffect(() => {
         if (fetchedData) {
             setShowToast(true);
@@ -94,7 +91,7 @@ export default function UserInfoUpdate({ userId, user }) {
         }
     }, [deleteError]);
 
-    // 6. Native Dialog 및 모달 제어 효과
+    // Native Dialog 및 모달 제어 효과
     useEffect(() => {
         if (withdrawalDialogRef.current) {
             if (isModalOpen) {
@@ -155,7 +152,8 @@ export default function UserInfoUpdate({ userId, user }) {
                                 />
                                 <label htmlFor="profileImageInput" className="profile-edit__overlay-btn">
                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <path d="M9.5 1.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
+                                        {/* stroke-width -> strokeWidth / stroke-linejoin -> strokeLinejoin 수정 */}
+                                        <path d="M9.5 1.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
                                     </svg>
                                 </label>
                                 <input 
@@ -178,11 +176,12 @@ export default function UserInfoUpdate({ userId, user }) {
                                     이메일
                                     <span className="field__badge-readonly">Read Only</span>
                                 </label>
+                                {/* readonly -> readOnly 수정 */}
                                 <input 
                                     type="text" 
                                     className="field__input" 
                                     value={user?.email || 'startupcode@gmail.com'} 
-                                    readonly
+                                    readOnly
                                 />
                             </div>
 
@@ -252,7 +251,8 @@ export default function UserInfoUpdate({ userId, user }) {
                     style={{ background: 'white', border: 'none', padding: 'var(--space-6)', borderRadius: 'var(--radius-2xl)', maxWidth: '24rem', width: '90%', boxShadow: 'var(--shadow-xl)' }}
                     onClose={() => setIsModalOpen(false)}
                 >
-                    <h2 id="withdrawalModalTitle" class="modal-title" style={{ fontSize: 'var(--font-size-md)', fontWeight: 700, marginBottom: '6px' }}>
+                    {/* class -> className 수정 */}
+                    <h2 id="withdrawalModalTitle" className="modal-title" style={{ fontSize: 'var(--font-size-md)', fontWeight: 700, marginBottom: '6px' }}>
                         회원탈퇴 하시겠습니까?
                     </h2>
                     <p className="modal-subtitle" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginBottom: '20px' }}>
