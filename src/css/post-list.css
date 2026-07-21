@@ -224,3 +224,27 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
+
+/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 CSS에서 통합 처리 */
+.btn-write svg {
+  margin-right: 4px;
+  width: 14px;
+  height: 14px;
+  fill: none;
+}
+.btn-write svg path {
+  stroke: white;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.post-list-observer {
+  height: 40px;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+

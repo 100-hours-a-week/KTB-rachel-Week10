@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // 우리가 아는 진짜 리액트 라우터 훅
+import { useNavigate, useLocation } from 'react-router-dom'; // 리액트 라우터 훅
+import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
 import '../css/header.css';
+import defaultProfile from '../images/default-profile.png'; // 기본 프로필 이미지 임포트
 
-export default function Header({ user, setIsLoggedIn }) {
+export default function Header() {
+  const { currentUser: user, logout } = useAuth(); // [수정 내용 주석] useAuth 훅을 통해 유저 정보와 로그아웃 함수 획득
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate(); 
+  const location = useLocation();
 
   // 외부 영역 클릭 시 드롭다운 닫기
   useEffect(() => {
@@ -18,106 +22,115 @@ export default function Header({ user, setIsLoggedIn }) {
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
 
-  // 게시글 전체 조회 이동
-  const handleGoHome = () => {
-    navigate('/posts');
+  // 뒤로가기
+  const handleBack = () => {
+    navigate(-1);
   };
 
   // 회원정보 수정 이동
   const handleEditInfo = (e) => {
     e.preventDefault();
-    navigate('/user/edit', { state: { userId: user?.id } });
+    navigate('/user/edit', { state: { userId: user?.userId } });
     setIsDropdownOpen(false);
   };
 
   // 비밀번호 수정 이동
   const handleEditPwd = (e) => {
     e.preventDefault();
-    navigate('/user/password', { state: { userId: user?.id } });
+    navigate('/user/password', { state: { userId: user?.userId } });
     setIsDropdownOpen(false);
   };
 
   // 로그아웃
   const handleLogout = () => {
     alert('로그아웃 되었습니다.');
-    sessionStorage.clear();
-    
-    // 상위 컴포넌트의 상태를 변경
-    if (setIsLoggedIn) {
-      setIsLoggedIn(false); 
-    }
-
+    // [수정 내용 주석] 직접 sessionStorage를 지우는 대신, AuthContext의 logout 함수를 실행합니다.
+    logout();
     navigate('/login');
     setIsDropdownOpen(false);
   };
 
+  const isMainPage = location.pathname === '/posts' || location.pathname === '/post';
+
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-blue-100">
-      <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+    <nav className="global-header" data-auth="user">
+      <div className="header-container">
         
-        {/* 왼쪽: 로고 및 홈 이동 버튼 */}
+        {/* 왼쪽: 뒤로가기 버튼 (메인 페이지인 /posts에서는 숨김) */}
         <button
-          onClick={handleGoHome}
-          className="flex items-center gap-2.5 group"
+          type="button"
+          id="headerBackBtn"
+          onClick={handleBack}
+          className="btn-back"
+          style={{ visibility: isMainPage ? 'hidden' : 'visible' }}
         >
-          <div className="w-8 h-8 rounded-lg bg-blue-700 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              {/* fill-opacity -> fillOpacity 수정 */}
-              <path
-                d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v7a1.5 1.5 0 01-1.5 1.5H9l-1 2-1-2H3.5A1.5 1.5 0 012 10.5v-7z"
-                fill="white"
-                fillOpacity="0.9"
-              />
-            </svg>
-          </div>
-          <span className="text-base font-bold text-blue-900 tracking-tight group-hover:text-blue-700 transition-colors">
-            블루커뮤니티
-          </span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
         </button>
 
-        {/* 오른쪽: 사용자 정보 및 드롭다운 메뉴 구역 */}
-        <div className="flex items-center gap-3" ref={dropdownRef}>
-          <span className="text-sm text-slate-500 font-medium hidden sm:block">
-            {user?.name || '사용자'}
-          </span>
-          
-          <div className="relative">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDropdownOpen(!isDropdownOpen);
-              }}
-              className="w-9 h-9 rounded-full bg-blue-700 flex items-center justify-center text-white text-sm font-semibold hover:bg-blue-800 transition-colors shadow-sm"
-            >
-              {user?.avatar || 'U'}
-            </button>
+        {/* 가운데: 헤더 타이틀 */}
+        <h1 
+          className="header-title" 
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/posts')}
+        >
+          블루커뮤니티
+        </h1>
 
-            {/* 드롭다운 메뉴 */}
-            <div className={`absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-lg border border-blue-100 py-1 transition-all duration-150 z-50 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+        {/* 오른쪽: 사용자 정보 및 드롭다운 메뉴 구역 */}
+        <div className="header-profile-wrapper" ref={dropdownRef}>
+          <button 
+            type="button"
+            id="headerProfileBtn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsDropdownOpen(!isDropdownOpen);
+            }}
+            className="btn-profile"
+          >
+            <img 
+              src={user?.profileImage || defaultProfile} 
+              alt="프로필" 
+              className="profile-img" 
+            />
+          </button>
+
+          {/* 드롭다운 메뉴 */}
+          <ul 
+            id="headerDropdownMenu" 
+            className={`header-dropdown ${isDropdownOpen ? '' : 'hidden'}`}
+          >
+            <li>
               <button
+                type="button"
+                id="menuEditInfo"
                 onClick={handleEditInfo}
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
               >
-                정보 수정
+                회원정보수정
               </button>
+            </li>
+            <li>
               <button
+                type="button"
+                id="menuEditPwd"
                 onClick={handleEditPwd}
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
               >
-                비밀번호 변경
+                비밀번호수정
               </button>
-              <hr className="border-blue-50 my-1" />
+            </li>
+            <li>
               <button
+                type="button"
+                id="menuLogout"
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 transition-colors"
               >
                 로그아웃
               </button>
-            </div>
-          </div>
-
+            </li>
+          </ul>
         </div>
       </div>
-    </header>
+    </nav>
   );
 }

@@ -1,0 +1,73 @@
+/* ============================================================
+   Modal — 공통 모달 팝업
+   ============================================================ */
+@import "./tokens.css";
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 31, 92, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* 닫힘 상태 */
+.modal-overlay.hidden {
+  display: none;
+}
+
+/* 모달 본체 */
+.modal-content {
+  background: white;
+  border: none;
+  padding: var(--space-6);
+  border-radius: var(--radius-2xl);
+  max-width: 24rem;
+  width: 90%;
+  box-shadow: var(--shadow-xl);
+}
+
+/* 제목 */
+.modal-title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--color-text-heading);
+}
+
+/* 부제목 / 본문 */
+.modal-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* 버튼 영역 */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 모달 내 확인/취소 버튼 공통 크기 */
+.modal-actions button {
+  padding: 6px 12px;
+  width: auto;
+}
+
+/* 취소 버튼 전용 스타일 */
+.modal-actions .btn-cancel {
+  background: var(--blue-50);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-body);
+}
+
+.modal-actions .btn-cancel:hover {
+  background: var(--blue-100);
+}

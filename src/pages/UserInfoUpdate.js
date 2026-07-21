@@ -3,9 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch.js';
 import { validateNickname } from '../utils/validators.js';
 import Header from '../components/Header.js';
+import Modal from '../components/Modal.js';
+import ToastMessage from '../components/ToastMessage.js';
+import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
 import '../css/user-edit.css';
 
-export default function UserInfoUpdate({ userId, user }) {
+export default function UserInfoUpdate() {
+    const { currentUser, logout } = useAuth(); // [수정 내용 주석] useAuth 훅 사용
+    const user = currentUser;
+    const userId = currentUser?.userId;
+
     const navigate = useNavigate();
     
     const [nickname, setNickname] = useState(user?.nickname || '스타트업코드');
@@ -54,10 +61,18 @@ export default function UserInfoUpdate({ userId, user }) {
         [shouldDelete]
     );
 
+    // 유저 정보 업데이트
+    useEffect(() => {
+        if (user) {
+            setNickname(user.nickname || '');
+            setPreviewUrl(user.profileImage || '../../../images/default-profile.png');
+        }
+    }, [user]);
+
     // 비즈니스 사이드 이펙트 처리 (성공/실패 토스트 및 알림)
     useEffect(() => {
         if (fetchedData) {
-            setShowToast(true);
+            setShowToast(true); 
             // 토스트 노출 후 조금 뒤에 메인으로 이동
             const timer = setTimeout(() => {
                 navigate('/posts');
@@ -77,11 +92,12 @@ export default function UserInfoUpdate({ userId, user }) {
     useEffect(() => {
         if (deleteData) {
             alert('탈퇴 완료되었습니다.');
-            sessionStorage.clear();
+            // [수정 내용 주석] 직접 sessionStorage를 지우는 대신, AuthContext의 logout 함수를 실행합니다.
+            logout();
             document.body.classList.remove('logged-in'); // 필요한 레이아웃 제거 반영
             navigate('/login');
         }
-    }, [deleteData, navigate]);
+    }, [deleteData, navigate, logout]);
 
     useEffect(() => {
         if (deleteError) {
@@ -91,7 +107,7 @@ export default function UserInfoUpdate({ userId, user }) {
         }
     }, [deleteError]);
 
-    // Native Dialog 및 모달 제어 효과
+    // Native Dialog 및 모달 제어 효과 // 이건왜했어?
     useEffect(() => {
         if (withdrawalDialogRef.current) {
             if (isModalOpen) {
@@ -102,7 +118,7 @@ export default function UserInfoUpdate({ userId, user }) {
         }
     }, [isModalOpen]);
 
-    // 7. 수정 폼 제출 핸들러
+    // 수정 폼 제출 핸들러
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("btnSubmitEdit 이벤트 안에는 들어가네요. 브라우저 콘솔에 찍히나요?");
@@ -117,7 +133,7 @@ export default function UserInfoUpdate({ userId, user }) {
         }
     };
 
-    // 8. 이미지 업로드 및 프리뷰 핸들러
+    // 이미지 업로드 핸들러
     const handleProfileChange = (e) => {
         const file = e.target.files[0]; 
         if (!file) return;
@@ -151,9 +167,9 @@ export default function UserInfoUpdate({ userId, user }) {
                                     className="profile-edit__img"
                                 />
                                 <label htmlFor="profileImageInput" className="profile-edit__overlay-btn">
-                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        {/* stroke-width -> strokeWidth / stroke-linejoin -> strokeLinejoin 수정 */}
-                                        <path d="M9.5 1.5l2 2-7 7H2.5v-2l7-7z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+                                    {/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 user-edit.css로 이관 */}
+                                    <svg viewBox="0 0 14 14">
+                                        <path d="M9.5 1.5l2 2-7 7H2.5v-2l7-7z" />
                                     </svg>
                                 </label>
                                 <input 
@@ -221,65 +237,26 @@ export default function UserInfoUpdate({ userId, user }) {
                     </div>
 
                     {/* 수정 완료 토스트 알림 컴포넌트 */}
-                    <div 
-                        id="editCompleteToast" 
-                        className={`toast-complete-wrapper ${showToast ? '' : 'hidden'}`} 
-                        style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}
-                    >
-                        <button 
-                            type="button" 
-                            id="btnToastConfirm" 
-                            style={{ background: 'var(--blue-900)', color: '#ffffff', padding: 'var(--space-3) var(--space-8)', borderRadius: 'var(--radius-full)', border: 'none', fontSize: 'var(--font-size-sm)', fontWeight: 600, boxShadow: 'var(--shadow-lg)', cursor: 'pointer' }}
-                            onClick={() => navigate('/posts')}
-                        >
-                            수정완료
-                        </button>
-                    </div>
+                    <ToastMessage 
+                        id="editCompleteToast"
+                        show={showToast} 
+                        message="수정완료" 
+                        onClick={() => navigate('/posts')} 
+                    />
                 </main>
             </div>
 
             {/* 회원 탈퇴 모달 오버레이 및 다이얼로그 구역 */}
-            <div 
-                id="withdrawalModalOverlay" 
-                className={`modal-overlay ${isModalOpen ? '' : 'hidden'}`} 
-                style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(15, 31, 92, 0.4)', display: 'flex', alignItems: 'center', justify: 'center', zIndex: 9999 }}
-            >
-                <dialog 
-                    ref={withdrawalDialogRef}
-                    id="withdrawalDialog" 
-                    className="modal-content" 
-                    style={{ background: 'white', border: 'none', padding: 'var(--space-6)', borderRadius: 'var(--radius-2xl)', maxWidth: '24rem', width: '90%', boxShadow: 'var(--shadow-xl)' }}
-                    onClose={() => setIsModalOpen(false)}
-                >
-                    {/* class -> className 수정 */}
-                    <h2 id="withdrawalModalTitle" className="modal-title" style={{ fontSize: 'var(--font-size-md)', fontWeight: 700, marginBottom: '6px' }}>
-                        회원탈퇴 하시겠습니까?
-                    </h2>
-                    <p className="modal-subtitle" style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)', marginBottom: '20px' }}>
-                        작성된 게시글과 댓글은 삭제됩니다.
-                    </p>
-                    <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                        <button 
-                            type="button" 
-                            id="withdrawalCancelBtn" 
-                            className="btn-save" 
-                            style={{ padding: '6px 12px', background: 'var(--blue-50)', border: '1px solid var(--color-border)', color: 'var(--color-text-body)', width: 'auto' }}
-                            onClick={() => setIsModalOpen(false)}
-                        >
-                            취소
-                        </button>
-                        <button 
-                            type="button" 
-                            id="withdrawalConfirmBtn" 
-                            className="btn-withdraw" 
-                            style={{ padding: '6px 12px', width: 'auto' }}
-                            onClick={() => setShouldDelete(true)}
-                        >
-                            확인
-                        </button>
-                    </div>
-                </dialog>
-            </div>
+            <Modal
+                isOpen={isModalOpen}
+                title="회원탈퇴 하시겠습니까?"
+                subtitle="작성된 게시글과 댓글은 삭제됩니다."
+                confirmText="확인"
+                cancelText="취소"
+                isDanger={true}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={() => setShouldDelete(true)}
+            />
         </>
     );
 }

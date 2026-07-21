@@ -302,3 +302,53 @@
 .login-switch__link:hover {
   color: var(--color-primary-hover);
 }
+
+/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 CSS에서 통합 처리 */
+.login-panel__logo-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+}
+.login-panel__logo-icon svg path {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+.login-panel__features svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+}
+.login-panel__features li:nth-child(1) svg path:nth-child(1) {
+  fill: rgba(255, 255, 255, 0.15);
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+.login-panel__features li:nth-child(1) svg path:nth-child(2) {
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.login-panel__features li:nth-child(2) svg circle:nth-child(1) {
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 1.4;
+}
+.login-panel__features li:nth-child(2) svg path {
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.login-panel__features li:nth-child(2) svg circle:nth-child(3),
+.login-panel__features li:nth-child(2) svg circle:nth-child(4) {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+.login-panel__features li:nth-child(3) svg path {
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+

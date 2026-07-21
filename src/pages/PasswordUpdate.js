@@ -5,11 +5,17 @@ import { useInput } from '../hooks/useInput.js';
 import { validatePassword, validatePasswordCheck } from '../utils/validators.js';
 import InputField from '../components/InputField.js';
 import Header from '../components/Header.js';
+import ToastMessage from '../components/ToastMessage.js'; // [수정 내용 주석] 공통 토스트 컴포넌트 임포트
+import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
 
 import '../css/user-edit.css';
 import '../css/signup.css'; // className = field 스타일 공유를 위해 유지
 
-export default function UserPasswordUpdate({ userId, user }) {
+export default function UserPasswordUpdate() {
+    const { currentUser } = useAuth(); // [수정 내용 주석] useAuth 훅 사용
+    const user = currentUser;
+    const userId = currentUser?.userId;
+
     const navigate = useNavigate();
     const [passwordData, setPasswordData] = useState(null);
     const [showToast, setShowToast] = useState(false);
@@ -71,17 +77,18 @@ export default function UserPasswordUpdate({ userId, user }) {
     };
 
     return (
-        <div className="password-edit-page">
+        <div className="user-edit-page">
             <Header user={user} />
-            <main className="password-edit-main">
-                <h1 className="password-edit-main__title">비밀번호 수정</h1>
+            <main className="user-edit-main">
+                <h1 className="user-edit-main__title">비밀번호 수정</h1>
                 
-                <div className="password-edit-card">
-                    <p className="password-edit-card__desc">
+                <div className="user-edit-card">
+                    {/* [수정 내용 주석] 인라인 스타일을 user-edit-card__desc 클래스로 교체 */}
+                    <p className="user-edit-card__desc">
                         안전한 서비스 이용을 위해 비밀번호를 정기적으로 변경해 주세요.
                     </p>
                     
-                    <form id="editPasswordForm" className="password-edit-form" onSubmit={handleSubmit}>
+                    <form id="editPasswordForm" className="user-edit-form" onSubmit={handleSubmit}>
                         
                         <InputField
                             label="비밀번호"
@@ -107,7 +114,7 @@ export default function UserPasswordUpdate({ userId, user }) {
                             helperText="위에 입력한 비밀번호와 동일하게 입력하세요."
                         />
                        
-                        <div className="password-edit-actions">
+                        <div className="user-edit-actions">
                             <button 
                                 type="submit" 
                                 id="btnSubmitPassword" 
@@ -120,16 +127,12 @@ export default function UserPasswordUpdate({ userId, user }) {
                     </form>
                 </div>
 
-                {/* 토스트 메시지 영역: showToast 상태에 따라 리액트 조건부 렌더링 또는 hidden 바인딩 */}
-                <div 
-                    id="passwordToastMessage" 
-                    className={`toast-complete-wrapper ${showToast ? '' : 'hidden'}`} 
-                    style={{ position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}
-                >
-                    <div className="btn-toast-purple" style={{ background: 'var(--blue-900)', color: '#ffffff', padding: 'var(--space-3) var(--space-8)', borderRadius: 'var(--radius-full)', fontSize: 'var(--font-size-sm)', fontWeight: 600, boxShadow: 'var(--shadow-lg)' }}>
-                        수정완료
-                    </div>
-                </div>
+                {/* [수정 내용 주석] 공통 토스트 알림 컴포넌트 적용 */}
+                <ToastMessage 
+                    id="passwordToastMessage"
+                    show={showToast} 
+                    message="수정완료" 
+                />
             </main>
         </div>
     );

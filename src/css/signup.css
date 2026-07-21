@@ -389,3 +389,32 @@
 .signup-switch__link:hover {
   color: var(--color-primary-hover);
 }
+
+/* [수정 내용 주석] 인라인 스타일을 대체하기 위해 새로 추가된 클래스들 */
+.hidden-file-input {
+  display: none;
+}
+
+.signup-success-msg {
+  color: green;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.signup-error-msg {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 CSS에서 통합 처리 */
+.signup-panel__logo-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+}
+.signup-panel__logo-icon svg path {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+

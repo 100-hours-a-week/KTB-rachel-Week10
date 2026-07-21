@@ -23,6 +23,8 @@ export default function useFetch(url, options, deps = []) {
 
   
   useEffect(() => {
+    console.log(`url: ${url}`);
+    console.log(`현재 state: ${state}`);
     if (!url) return; 
 
     // AbortController로 fetch 중단 기능 추가

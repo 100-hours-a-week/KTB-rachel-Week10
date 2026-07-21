@@ -117,7 +117,7 @@ export default function SignUp() {
                         </p>
                     </div>
 
-                    {/* 통계 테이블 리스트 */}
+                    {/* 왼쪽 지면 */}
                     <ul className="signup-panel__stats">
                         <li className="signup-panel__stat">
                             <span className="signup-panel__stat-label">등록 회원</span>

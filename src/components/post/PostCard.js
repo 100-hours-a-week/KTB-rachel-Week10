@@ -1,4 +1,4 @@
-import '../css/post-list.css';
+import '../../css/post-list.css';
 
 export default function PostCard({post, handleClick}) {
     // 게시글 제목, 작성자, 생성날짜, postInfo(좋아요, 댓글, 조회수)
@@ -28,7 +28,7 @@ export default function PostCard({post, handleClick}) {
         >
             <div className="post-card__top">
                 <div className="post-card__body">
-                    {/* 3. 리액트 변수 출력은 ${}가 아니라 {} 만 사용! */}
+                    
                     <h2 className="post-card__title">{truncatedTitle}</h2>
                 </div>
             </div>
@@ -46,7 +46,7 @@ export default function PostCard({post, handleClick}) {
                     <span className="post-card__stat">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                             <path d="M1 6C1 6 2.5 2 6 2s5 4 5 4-1.5 4-5 4-5-4-5-4z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-                            {/* stroke-width -> strokeWidth 카멜케이스 수정 */}
+                            
                             <circle cx="6" cy="6" r="1.5" stroke="currentColor" strokeWidth="1.2" />
                         </svg>
                         {post.viewCount || 0}
@@ -60,7 +60,7 @@ export default function PostCard({post, handleClick}) {
                     </span>
 
                     <span className="post-card__stat">
-                        <span style={{ fontSize: '10px' }}>♥</span> {/* 리액트 인라인 스타일은 객체 형태여야 함 */}
+                        <span style={{ fontSize: '10px' }}>♥</span> 
                         {post.likeCount || 0}
                     </span>
                 </div>

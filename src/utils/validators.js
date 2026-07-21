@@ -57,4 +57,32 @@ export const validateNickname = (nickname) => {
     // 3. 닉네임 중복 확인
 
     return '';
-}
+};
+
+// 댓글 유효성 검사
+export const validateComment = (comment) => {
+    if (!comment || !comment.trim()) {
+        return '댓글을 입력해 주세요.';
+    }
+    return '';
+};
+
+// 게시글 제목 유효성 검사
+export const validatePostTitle = (title) => {
+    if (!title || !title.trim()) {
+        return '제목을 입력해 주세요.';
+    }
+    if (title.length > 26) {
+        return '제목은 26자 이내로 작성해 주세요.';
+    }
+    return '';
+};
+
+// 게시글 내용 유효성 검사
+export const validatePostContent = (content) => {
+    if (!content || !content.trim()) {
+        return '내용을 입력해 주세요.';
+    }
+    return '';
+};
+

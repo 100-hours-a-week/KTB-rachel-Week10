@@ -1,0 +1,39 @@
+/* ============================================================
+   ToastMessage — 공통 토스트 알림
+   ============================================================ */
+@import "./tokens.css";
+
+.toast-complete-wrapper {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.toast-complete-wrapper.hidden {
+  display: none;
+}
+
+/* 버튼형 및 단순 텍스트 안내형 공통 테마 */
+.btn-toast-purple,
+#btnToastConfirm {
+  background: var(--blue-900);
+  color: #ffffff;
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-full);
+  border: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  font-family: inherit;
+}
+
+/* 단순 텍스트 토스트일 때의 마우스 커서 설정 */
+.btn-toast-purple {
+  cursor: default;
+}
