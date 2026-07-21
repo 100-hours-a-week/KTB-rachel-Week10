@@ -5,11 +5,11 @@ import { validateNickname } from '../utils/validators.js';
 import Header from '../components/Header.js';
 import Modal from '../components/Modal.js';
 import ToastMessage from '../components/ToastMessage.js';
-import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
+import { useAuth } from '../context/AuthContext.js'; 
 import '../css/user-edit.css';
 
 export default function UserInfoUpdate() {
-    const { currentUser, logout } = useAuth(); // [수정 내용 주석] useAuth 훅 사용
+    const { currentUser, logout } = useAuth(); 
     const user = currentUser;
     const userId = currentUser?.userId;
 
@@ -92,7 +92,6 @@ export default function UserInfoUpdate() {
     useEffect(() => {
         if (deleteData) {
             alert('탈퇴 완료되었습니다.');
-            // [수정 내용 주석] 직접 sessionStorage를 지우는 대신, AuthContext의 logout 함수를 실행합니다.
             logout();
             document.body.classList.remove('logged-in'); // 필요한 레이아웃 제거 반영
             navigate('/login');
@@ -107,7 +106,7 @@ export default function UserInfoUpdate() {
         }
     }, [deleteError]);
 
-    // Native Dialog 및 모달 제어 효과 // 이건왜했어?
+    // Native Dialog 및 모달 제어 효과
     useEffect(() => {
         if (withdrawalDialogRef.current) {
             if (isModalOpen) {
@@ -141,7 +140,7 @@ export default function UserInfoUpdate() {
         console.log("이미지 수정 시도");
         setProfileFile(file);
 
-        // FileReader 대신 더 가볍고 성능이 좋은 리액트 권장 브라우저 탭 주소 참조 방식 채택
+        // TODO: 기존이랑 비교
         const nextPreviewUrl = URL.createObjectURL(file);
         setPreviewUrl(nextPreviewUrl);
         console.log("이미지 변경됨");
@@ -167,7 +166,6 @@ export default function UserInfoUpdate() {
                                     className="profile-edit__img"
                                 />
                                 <label htmlFor="profileImageInput" className="profile-edit__overlay-btn">
-                                    {/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 user-edit.css로 이관 */}
                                     <svg viewBox="0 0 14 14">
                                         <path d="M9.5 1.5l2 2-7 7H2.5v-2l7-7z" />
                                     </svg>
@@ -192,7 +190,6 @@ export default function UserInfoUpdate() {
                                     이메일
                                     <span className="field__badge-readonly">Read Only</span>
                                 </label>
-                                {/* readonly -> readOnly 수정 */}
                                 <input 
                                     type="text" 
                                     className="field__input" 

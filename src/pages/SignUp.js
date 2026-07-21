@@ -156,7 +156,6 @@ export default function SignUp() {
                                 id="profilePreview" 
                                 onClick={() => document.getElementById('profileImgInput').click()}
                             >
-                                {/* previewUrl이 있으면 이미지를 그리고, 없으면 + 기호를 띄움 */}
                                 {previewUrl ? (
                                     <img src={previewUrl} alt="프로필 미리보기" />
                                 ) : (
@@ -167,7 +166,6 @@ export default function SignUp() {
                                 프로필 사진 선택
                             </label>
 
-                            {/* input 태그에 onChange 이벤트 연결 */}
                             <input 
                                 type="file" 
                                 id="profileImgInput" 
@@ -179,7 +177,6 @@ export default function SignUp() {
                             <p className="field__helper field__helper--hint" id="profilImageHelper">*프로필 사진을 추가해주세요.</p>
                         </div>
 
-                        {/* 개별 입력 필드들 (autocomplete -> autoComplete 변경) */}
                         <InputField
                             label="이메일"
                             type="email"

@@ -1,13 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-/**
- * useLoadData — 무한 스크롤을 위해 데이터를 페이지별로 로드하는 Custom Hook
- * 
- * [수정 내용 주석]
- * - 기존 파일의 잘못된 훅 사용법(조건문/try-catch 내부에서 useFetch(훅)을 호출하는 등 리액트 훅 규칙 위반)을 수정했습니다.
- * - 누적 데이터(data), 로딩 상태(loading), 에러 상태(error), 더 가져올 데이터 유무(hasMore), 다음 페이지 호출 함수(loadMore)를 제어하고 반환합니다.
- * - page와 size를 기반으로 백엔드 API를 호출하며, 가져온 데이터를 기존 리스트에 누적하여 저장합니다.
- */
+
 export default function useLoadData(baseUrl, size = 10) {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);

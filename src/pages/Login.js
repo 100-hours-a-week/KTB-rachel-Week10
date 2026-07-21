@@ -4,7 +4,7 @@ import useFetch from '../hooks/useFetch.js';
 import { useInput } from '../hooks/useInput.js';
 import { validateEmail, validatePassword } from '../utils/validators.js';
 import InputField from '../components/InputField.js';
-import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
+import { useAuth } from '../context/AuthContext.js'; 
 import '../css/login.css'
 
 export default function Login() {
@@ -15,7 +15,7 @@ export default function Login() {
     // 로그인 페이지 이동
 
     const navigate = useNavigate();
-    const { login } = useAuth(); // [수정 내용 주석] useAuth 훅 사용
+    const { login } = useAuth(); 
     const [logindata, setLoginData] = useState(null);
    
     const emailInput = useInput("", validateEmail);
@@ -40,7 +40,6 @@ export default function Login() {
     useEffect(() => {
         if (fetchedData && fetchedData.data) {
             console.log("로그인 성공. 게시판 목록 조회 페이지로 이동합니다.");
-            // [수정 내용 주석] 직접 sessionStorage를 굽는 대신, AuthContext의 login 함수를 호출하여 전역 상태를 활성화합니다.
             login(fetchedData.data.userId, fetchedData.data);
             navigate('/posts'); 
         }
@@ -87,7 +86,6 @@ export default function Login() {
                     {/* 로고 영역 */}
                     <div className="login-panel__logo">
                         <div className="login-panel__logo-icon">
-                            {/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 login.css로 이관 */}
                             <svg viewBox="0 0 20 20">
                                 <path d="M2.5 4.5A2 2 0 014.5 2.5h11a2 2 0 012 2v9a2 2 0 01-2 2H12l-2 2.5L8 15.5H4.5a2 2 0 01-2-2v-9z" />
                             </svg>
@@ -108,7 +106,6 @@ export default function Login() {
                 <ul className="login-panel__features">
                     <li className="login-panel__feature">
                         <div className="login-panel__feature-icon">
-                            {/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 login.css로 이관 */}
                             <svg viewBox="0 0 20 20">
                                 <path d="M10 2L3 6v4c0 4 3.5 7.5 7 8 3.5-.5 7-4 7-8V6l-7-4z" />
                                 <path d="M7 10l2 2 4-4" />
@@ -123,7 +120,6 @@ export default function Login() {
                     
                     <li className="login-panel__feature">
                         <div className="login-panel__feature-icon">
-                            {/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 login.css로 이관 */}
                             <svg viewBox="0 0 20 20">
                                 <circle cx="10" cy="10" r="7.5" />
                                 <path d="M6.5 10a3.5 3.5 0 007 0" />
@@ -140,7 +136,6 @@ export default function Login() {
                     
                     <li className="login-panel__feature">
                         <div className="login-panel__feature-icon">
-                            {/* [수정 내용 주석] SVG의 style 및 presentation 속성을 제거하고 login.css로 이관 */}
                             <svg viewBox="0 0 20 20">
                                 <path d="M4 10h12M10 4l6 6-6 6" />
                             </svg>

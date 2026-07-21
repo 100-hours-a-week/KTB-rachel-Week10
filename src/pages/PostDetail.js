@@ -2,10 +2,10 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { validateComment} from '../utils/validators.js';
 import Header from '../components/Header.js';
-import CommentSection from '../components/comment/commentSection.js'; // [수정 내용 주석] 분리한 CommentSection 컴포넌트로 변경하여 임포트
-import PostStat from '../components/post/PostStat.js'; // [수정 내용 주석] 분리한 PostStat 컴포넌트 임포트 추가
-import Modal from '../components/Modal.js';     // [수정 내용 주석] 공통 모달 컴포넌트 임포트
-import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
+import CommentSection from '../components/comment/commentSection.js'; 
+import PostStat from '../components/post/PostStat.js';
+import Modal from '../components/Modal.js';   
+import { useAuth } from '../context/AuthContext.js';
 import '../css/post-detail.css';
 
 export default function PostDetail() {
@@ -118,7 +118,7 @@ export default function PostDetail() {
     }
   };
 
-  // 게시글 삭제 요청 (DELETE)
+  // 게시글 삭제 요청 
   const handleConfirmDeletePost = async () => {
     try {
       const response = await fetch(`http://localhost:8080/posts/${postId}`, {
@@ -139,7 +139,7 @@ export default function PostDetail() {
     }
   };
 
-  // 좋아요 토글 (POST/DELETE)
+  // 좋아요 토글 
   const handleLikeToggle = async () => {
     if (!userId) {
       alert("로그인이 필요합니다.");
@@ -170,7 +170,7 @@ export default function PostDetail() {
     }
   };
 
-  // 댓글 생성 요청 (POST)
+  // 댓글 생성 요청
   const handleCreateComment = async (e) => {
     e.preventDefault();
     if (!userId) {
@@ -206,7 +206,7 @@ export default function PostDetail() {
     }
   };
 
-  // 댓글 수정 요청 (PATCH)
+  // 댓글 수정 요청 
   const handleSaveEditComment = async (commentId) => {
     // validator.js를 통한 댓글 수정 검사
     const errorMsg = validateComment(editCommentValue);
@@ -237,7 +237,7 @@ export default function PostDetail() {
     }
   };
 
-  // 댓글 삭제 요청 (DELETE)
+  // 댓글 삭제 요청 
   const handleConfirmDeleteComment = async () => {
     if (!commentToDelete) return;
 

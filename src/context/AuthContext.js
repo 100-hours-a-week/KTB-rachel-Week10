@@ -1,14 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import useFetch from '../hooks/useFetch.js'; // [수정 내용 주석] 기존 프로젝트의 useFetch 훅 재사용
 
-// 전역 인증 컨텍스트 객체 생성
+// //AuthProvider — 전역 인증 상태 제공 컴포넌트
 const AuthContext = createContext(null);
 
-
- //AuthProvider — 전역 인증 상태 제공 컴포넌트
-  
- // 로그인 성공 시 login, 로그아웃 시 logout 함수를 호출하여 전역 유저 상태를 갱신합니다.
- 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const loggedInUserId = sessionStorage.getItem('userId');

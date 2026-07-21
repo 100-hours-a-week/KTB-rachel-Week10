@@ -5,14 +5,14 @@ import { useInput } from '../hooks/useInput.js';
 import { validatePassword, validatePasswordCheck } from '../utils/validators.js';
 import InputField from '../components/InputField.js';
 import Header from '../components/Header.js';
-import ToastMessage from '../components/ToastMessage.js'; // [수정 내용 주석] 공통 토스트 컴포넌트 임포트
-import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
+import ToastMessage from '../components/ToastMessage.js'; 
+import { useAuth } from '../context/AuthContext.js'; 
 
 import '../css/user-edit.css';
 import '../css/signup.css'; // className = field 스타일 공유를 위해 유지
 
 export default function UserPasswordUpdate() {
-    const { currentUser } = useAuth(); // [수정 내용 주석] useAuth 훅 사용
+    const { currentUser } = useAuth();
     const user = currentUser;
     const userId = currentUser?.userId;
 
@@ -35,7 +35,6 @@ export default function UserPasswordUpdate() {
             method: 'PUT',
             credentials: "include",
             headers: { 'Content-Type': 'application/json' },
-            // passwordData가 확실히 있을 때만 변환하고, 첫 진입 시점(null)에는 undefined 처리
             body: passwordData ? JSON.stringify(passwordData) : undefined, 
         },
         [passwordData]
@@ -83,7 +82,6 @@ export default function UserPasswordUpdate() {
                 <h1 className="user-edit-main__title">비밀번호 수정</h1>
                 
                 <div className="user-edit-card">
-                    {/* [수정 내용 주석] 인라인 스타일을 user-edit-card__desc 클래스로 교체 */}
                     <p className="user-edit-card__desc">
                         안전한 서비스 이용을 위해 비밀번호를 정기적으로 변경해 주세요.
                     </p>
@@ -127,7 +125,6 @@ export default function UserPasswordUpdate() {
                     </form>
                 </div>
 
-                {/* [수정 내용 주석] 공통 토스트 알림 컴포넌트 적용 */}
                 <ToastMessage 
                     id="passwordToastMessage"
                     show={showToast} 
