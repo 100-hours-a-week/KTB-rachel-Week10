@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom'; // 리액트 라우터 훅
-import { useAuth } from '../context/AuthContext.js'; // [수정 내용 주석] useAuth 임포트 추가
 import '../css/header.css';
 import defaultProfile from '../images/default-profile.png'; // 기본 프로필 이미지 임포트
 
-export default function Header() {
-  const { currentUser: user, logout } = useAuth(); // [수정 내용 주석] useAuth 훅을 통해 유저 정보와 로그아웃 함수 획득
+export default function Header({ user, setIsLoggedIn }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate(); 
@@ -28,15 +26,13 @@ export default function Header() {
   };
 
   // 회원정보 수정 이동
-  const handleEditInfo = (e) => {
-    e.preventDefault();
+  const handleEditInfo = () => {
     navigate('/user/edit', { state: { userId: user?.userId } });
     setIsDropdownOpen(false);
   };
 
   // 비밀번호 수정 이동
-  const handleEditPwd = (e) => {
-    e.preventDefault();
+  const handleEditPwd = () => {
     navigate('/user/password', { state: { userId: user?.userId } });
     setIsDropdownOpen(false);
   };
@@ -44,8 +40,13 @@ export default function Header() {
   // 로그아웃
   const handleLogout = () => {
     alert('로그아웃 되었습니다.');
-    // [수정 내용 주석] 직접 sessionStorage를 지우는 대신, AuthContext의 logout 함수를 실행합니다.
-    logout();
+    sessionStorage.clear();
+    
+    // 상위 컴포넌트의 상태를 변경
+    if (setIsLoggedIn) {
+      setIsLoggedIn(false); 
+    }
+
     navigate('/login');
     setIsDropdownOpen(false);
   };
@@ -56,7 +57,6 @@ export default function Header() {
     <nav className="global-header" data-auth="user">
       <div className="header-container">
         
-        {/* 왼쪽: 뒤로가기 버튼 (메인 페이지인 /posts에서는 숨김) */}
         <button
           type="button"
           id="headerBackBtn"

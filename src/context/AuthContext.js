@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import useFetch from '../hooks/useFetch.js'; // [수정 내용 주석] 기존 프로젝트의 useFetch 훅 재사용
+import useFetch from '../hooks/useFetch.js'; 
 
 // //AuthProvider — 전역 인증 상태 제공 컴포넌트
 const AuthContext = createContext(null);
@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const loggedInUserId = sessionStorage.getItem('userId');
 
-  // [수정 내용 주석] 쿠키(JWT)를 기반으로 /users/me 호출하여 로그인 세션 복구
   const { data: userData, loading, error } = useFetch(
     loggedInUserId ? `http://localhost:8080/users/me` : null,
     {
@@ -28,7 +27,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (error) {
       console.error('사용자 세션 복구 실패:', error.message);
-      // 세션 검증이 실패한 경우 스토리지 클리어
+      // 세션 검증이 실패한 경우
       sessionStorage.clear();
       setCurrentUser(null);
     }

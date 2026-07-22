@@ -1,20 +1,5 @@
 import React from 'react';
 
-/**
- * PostStat — 게시글 통계(좋아요, 조회수, 댓글수) 컴포넌트
- * 
- * [수정 내용 주석]
- * - 확장자를 .jsx에서 .js로 변경하여 프로젝트 일관성을 유지시켰습니다.
- * - PostDetail.js 내의 게시글 통계 부분을 별도 컴포넌트로 분리하였습니다.
- * - 인라인 스타일과 SVG 프레젠테이션 속성을 사용하지 않고 CSS 클래스명을 활용합니다.
- * 
- * Props:
- * - isLiked: 현재 사용자가 좋아요를 눌렀는지 여부 (boolean)
- * - likeCount: 좋아요 총 개수 (number)
- * - handleLikeToggle: 좋아요 버튼 클릭 핸들러 (function)
- * - viewCount: 조회수 (number)
- * - commentCount: 댓글 총 개수 (number)
- */
 export default function PostStat({
   isLiked,
   likeCount,
