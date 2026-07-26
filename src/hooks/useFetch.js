@@ -37,18 +37,16 @@ export default function useFetch(url, options, deps = []) {
         // 요청이 중단된 경우는 무시
         if (e.name === "AbortError") return;
 
-        // 실패 시: error 갱신 및 로딩 종료
         setState({ data: null, loading: false, error: e });
       }
     };
 
-    // Hook 실행 시 즉시 요청
     run();
 
     // 컴포넌트 언마운트 시 fetch 요청 중단
     return () => controller.abort();
-  }, [url, stableOptions, ...deps]); // 의존성 배열: url, 옵션, 외부 deps 변경 시 다시 실행
+  }, [url, stableOptions, ...deps]); 
 
   
-  return state; // { data, loading, error }
+  return state; 
 }

@@ -9,7 +9,7 @@ import ToastMessage from '../components/ToastMessage.js';
 import { useAuth } from '../context/AuthContext.js'; 
 
 import '../css/user-edit.css';
-import '../css/signup.css'; // className = field 스타일 공유를 위해 유지
+import '../css/signup.css'; // className = field 스타일 공유를 위해 유지!!
 
 export default function UserPasswordUpdate() {
     const { currentUser } = useAuth();
@@ -58,7 +58,7 @@ export default function UserPasswordUpdate() {
         if (error) {
             console.error("비밀번호 변경 중 에러 발생:", error.message);
             alert("비밀번호 수정 실패. 다시 시도해 주세요.");
-            setPasswordData(null); // 다음 전송 시도를 위해 상태 리셋
+            setPasswordData(null); 
         }
     }, [error]);
 

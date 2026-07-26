@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // 리액트 라우터 훅
+import { useNavigate, useLocation } from 'react-router-dom'; 
 import '../css/header.css';
-import defaultProfile from '../images/default-profile.png'; // 기본 프로필 이미지 임포트
+import defaultProfile from '../images/default-profile.png'; 
 
 export default function Header({ user, setIsLoggedIn }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

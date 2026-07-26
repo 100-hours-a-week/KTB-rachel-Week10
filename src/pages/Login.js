@@ -24,7 +24,6 @@ export default function Login() {
         emailInput.value && !emailInput.error &&
         passwordInput.value && !passwordInput.error;
 
-    // POST fetch
     const { data: fetchedData, loading, error } = useFetch(
         logindata ? 'http://localhost:8080/users/login' : null,
         {

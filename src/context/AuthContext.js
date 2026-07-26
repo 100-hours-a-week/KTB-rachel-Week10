@@ -33,13 +33,11 @@ export function AuthProvider({ children }) {
     }
   }, [error]);
 
-  // 로그인 처리 함수
   const login = (userId, userData) => {
     sessionStorage.setItem('userId', userId);
     setCurrentUser(userData);
   };
 
-  // 로그아웃 처리 함수
   const logout = () => {
     sessionStorage.clear();
     setCurrentUser(null);
@@ -52,7 +50,7 @@ export function AuthProvider({ children }) {
   );
 }
 
-// useAuth — 전역 인증 정보 소비용 커스텀 훅
+
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

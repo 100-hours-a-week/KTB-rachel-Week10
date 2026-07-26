@@ -30,7 +30,6 @@ export default function CommentSection({
     <section className="comments">
       <h3 className="comments__title">댓글 ({comments.length})</h3>
       
-      {/* 댓글 입력 폼 컴포넌트 */}
       <CommentForm 
         user={user}
         commentInput={commentInput}
@@ -55,8 +54,6 @@ export default function CommentSection({
           />
         ))}
       </ul>
-
-      {/* [수정 내용 주석] 페이지네이션의 인라인 스타일 제거 및 pagination-btn 클래스로 이관 */}
       {totalPages > 1 && (
         <div className="pagination">
           {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(pageNum => (

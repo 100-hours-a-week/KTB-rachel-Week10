@@ -69,11 +69,11 @@ export default function UserInfoUpdate() {
         }
     }, [user]);
 
-    // 비즈니스 사이드 이펙트 처리 (성공/실패 토스트 및 알림)
+    /* useEffect 후속처리 */
+
     useEffect(() => {
         if (fetchedData) {
             setShowToast(true); 
-            // 토스트 노출 후 조금 뒤에 메인으로 이동
             const timer = setTimeout(() => {
                 navigate('/posts');
             }, 1200);

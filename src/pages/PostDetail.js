@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { validateComment} from '../utils/validators.js';
 import Header from '../components/Header.js';
@@ -6,6 +6,7 @@ import CommentSection from '../components/comment/commentSection.js';
 import PostStat from '../components/post/PostStat.js';
 import Modal from '../components/Modal.js';   
 import { useAuth } from '../context/AuthContext.js';
+import useFetch from '../hooks/useFetch.js';
 import '../css/post-detail.css';
 
 export default function PostDetail() {
@@ -16,99 +17,217 @@ export default function PostDetail() {
   const { postId } = useParams();
   const navigate = useNavigate();
 
-  // 게시글 관련 상태
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // 좋아요 관련 상태
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
-  // 댓글 관련 상태
-  const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
   
-  // 댓글 수정 모드 상태
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentValue, setEditCommentValue] = useState('');
 
-  // 댓글 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 10;
 
-  // 삭제 모달 상태
   const [isDeletePostModalOpen, setIsDeletePostModalOpen] = useState(false);
   const [isDeleteCommentModalOpen, setIsDeleteCommentModalOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
 
-  // 게시글 상세 조회 API 호출
-  const fetchPostDetail = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://localhost:8080/posts/${postId}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const resJson = await response.json();
-      
-      setPost(resJson.data);
-      setLikeCount(resJson.data.likeCount || 0);
-    } catch (e) {
-      setError(e);
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, [postId]);
+  const [commentTrigger, setCommentTrigger] = useState(0);
+  const [likeTrigger, setLikeTrigger] = useState(0);
 
-  // 댓글 목록 조회 API 호출
-  const fetchComments = useCallback(async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/posts/${postId}/comments`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const resJson = await response.json();
-      setComments(resJson.data.comments || []);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [postId]);
+  const [deletePostPayload, setDeletePostPayload] = useState(null);
+  const [likeTogglePayload, setLikeTogglePayload] = useState(null);
+  const [createCommentPayload, setCreateCommentPayload] = useState(null);
+  const [editCommentPayload, setEditCommentPayload] = useState(null);
+  const [deleteCommentPayload, setDeleteCommentPayload] = useState(null);
 
-  // 좋아요 상태값 연동 (로컬 스토리지 흔적 확인)
-  const fetchLikeInfo = useCallback(async () => {
-    if (!userId) return;
-    try {
-      const response = await fetch(`http://localhost:8080/posts/${postId}/likes`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      if (response.ok) {
-        const resJson = await response.json();
-        setLikeCount(resJson.data.likeNum);
-        
-        // 새로고침 시에도 사용자가 이 글에 좋아요를 눌렀었는지 임시 저장소에서 확인해 상태 매핑
-        const likedInStorage = localStorage.getItem(`post_${postId}_liked_by_${userId}`) === 'true';
-        setIsLiked(likedInStorage);
-      }
-    } catch (e) {
-      console.error(e);
+  // 게시글 조회
+  const { data: postDetailData, loading: postLoading, error: postError } = useFetch(
+    `http://localhost:8080/posts/${postId}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    },
+    [postId, likeTrigger, commentTrigger]
+  );
+
+  // 게시글 삭제
+  const { data: deletePostResult, error: deletePostError } = useFetch(
+    deletePostPayload ? `http://localhost:8080/posts/${postId}` : null,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(deletePostPayload)
+    },
+    [deletePostPayload]
+  );
+
+  // 좋아요 토글 요청 (POST/DELETE)
+  const { data: likeToggleResult, error: likeToggleError } = useFetch(
+    likeTogglePayload ? `http://localhost:8080/posts/${postId}/${userId}/likes` : null,
+    {
+      method: isLiked ? 'DELETE' : 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: isLiked ? null : JSON.stringify(likeTogglePayload)
+    },
+    [likeTogglePayload]
+  );
+
+  // 댓글 생성
+  const { data: createCommentResult, error: createCommentError } = useFetch(
+    createCommentPayload ? `http://localhost:8080/posts/${postId}/comments` : null,
+    {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(createCommentPayload)
+    },
+    [createCommentPayload]
+  );
+
+  // 댓글 수정
+  const { data: editCommentResult, error: editCommentError } = useFetch(
+    editCommentPayload ? `http://localhost:8080/posts/${postId}/comments/${editCommentPayload.commentId}` : null,
+    {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editCommentPayload?.body)
+    },
+    [editCommentPayload]
+  );
+
+  // 댓글 삭제
+  const { data: deleteCommentResult, error: deleteCommentError } = useFetch(
+    deleteCommentPayload ? `http://localhost:8080/posts/${postId}/comments/${deleteCommentPayload.commentId}` : null,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(deleteCommentPayload?.body)
+    },
+    [deleteCommentPayload]
+  );
+
+  const post = postDetailData?.data || null;
+  const comments = postDetailData?.data?.comments || [];
+  const loading = postLoading && !postDetailData;
+  const error = postError;
+
+  /* 후속처리 useEffect */
+
+  // 좋아요 수 동기화
+  useEffect(() => {
+    if (postDetailData?.data) {
+      setLikeCount(postDetailData.data.likeCount || 0);
+    }
+  }, [postDetailData]);
+
+  // 좋아요 토글 상태 초기화
+  useEffect(() => {
+    if (userId) {
+      const likedInStorage = localStorage.getItem(`post_${postId}_liked_by_${userId}`) === 'true';
+      setIsLiked(likedInStorage);
     }
   }, [postId, userId]);
 
+  
   useEffect(() => {
-    fetchPostDetail();
-    fetchComments();
-    fetchLikeInfo();
-  }, [fetchPostDetail, fetchComments, fetchLikeInfo]);
+    if (deletePostResult) {
+      alert("게시글이 삭제되었습니다.");
+      navigate('/posts');
+    }
+  }, [deletePostResult, navigate]);
 
-  // 게시글 수정 페이지 이동 (작성자 검증 포함)
+  useEffect(() => {
+    if (deletePostError) {
+      console.error(deletePostError);
+      alert("게시글 삭제에 실패했습니다.");
+      setDeletePostPayload(null);
+    }
+  }, [deletePostError]);
+
+  // 좋아요 토글 결과 처리
+  useEffect(() => {
+    if (likeToggleResult) {
+      const newLikeNum = likeToggleResult.data.likeInfo.likeNum;
+      setLikeCount(newLikeNum);
+      setIsLiked(prev => {
+        const nextLiked = !prev;
+        localStorage.setItem(`post_${postId}_liked_by_${userId}`, String(nextLiked));
+        return nextLiked;
+      });
+      setLikeTrigger(prev => prev + 1);
+      setLikeTogglePayload(null);
+    }
+  }, [likeToggleResult, postId, userId]);
+
+  useEffect(() => {
+    if (likeToggleError) {
+      console.error("좋아요 처리 실패: ", likeToggleError);
+      alert("좋아요 처리에 실패했습니다.");
+      setLikeTogglePayload(null);
+    }
+  }, [likeToggleError]);
+
+  // 댓글 생성 결과 처리
+  useEffect(() => {
+    if (createCommentResult) {
+      setCommentInput('');
+      setCommentTrigger(prev => prev + 1);
+      setLikeTrigger(prev => prev + 1);
+      setCreateCommentPayload(null);
+    }
+  }, [createCommentResult]);
+
+  useEffect(() => {
+    if (createCommentError) {
+      console.error(createCommentError);
+      alert("댓글 등록에 실패했습니다.");
+      setCreateCommentPayload(null);
+    }
+  }, [createCommentError]);
+
+  // 댓글 수정 결과 처리
+  useEffect(() => {
+    if (editCommentResult) {
+      setEditingCommentId(null);
+      setEditCommentValue('');
+      setCommentTrigger(prev => prev + 1);
+      setEditCommentPayload(null);
+    }
+  }, [editCommentResult]);
+
+  useEffect(() => {
+    if (editCommentError) {
+      console.error(editCommentError);
+      alert("댓글 수정에 실패했습니다.");
+      setEditCommentPayload(null);
+    }
+  }, [editCommentError]);
+
+  // 댓글 삭제 결과 처리
+  useEffect(() => {
+    if (deleteCommentResult) {
+      setCommentToDelete(null);
+      setCommentTrigger(prev => prev + 1);
+      setLikeTrigger(prev => prev + 1);
+      setDeleteCommentPayload(null);
+    }
+  }, [deleteCommentResult]);
+
+  useEffect(() => {
+    if (deleteCommentError) {
+      console.error(deleteCommentError);
+      alert("댓글 삭제에 실패했습니다.");
+      setDeleteCommentPayload(null);
+    }
+  }, [deleteCommentError]);
+
+  // 핸들러 함수들
   const handleEditPost = (e) => {
     e.preventDefault();
     if (String(post?.authorId) === String(userId)) {
@@ -118,150 +237,60 @@ export default function PostDetail() {
     }
   };
 
-  // 게시글 삭제 요청 
-  const handleConfirmDeletePost = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/posts/${postId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: Number(userId) })
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      alert("게시글이 삭제되었습니다.");
-      navigate('/posts');
-    } catch (e) {
-      console.error(e);
-      alert("게시글 삭제에 실패했습니다.");
-    } finally {
-      setIsDeletePostModalOpen(false);
-    }
+  const handleConfirmDeletePost = () => {
+    setDeletePostPayload({ userId: Number(userId) });
+    setIsDeletePostModalOpen(false);
   };
 
-  // 좋아요 토글 
-  const handleLikeToggle = async () => {
+  const handleLikeToggle = () => {
     if (!userId) {
       alert("로그인이 필요합니다.");
       return;
     }
-
-    const url = `http://localhost:8080/posts/${postId}/${userId}/likes`;
-    try {
-      const method = isLiked ? 'DELETE' : 'POST';
-      const body = isLiked ? null : JSON.stringify({ isLike: true });
-      const response = await fetch(url, {
-        method,
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const resJson = await response.json();
-      
-      const newLikeNum = resJson.data.likeInfo.likeNum;
-      setLikeCount(newLikeNum);
-      setIsLiked(!isLiked);
-      localStorage.setItem(`post_${postId}_liked_by_${userId}`, String(!isLiked));
-    } catch (e) {
-      console.error("좋아요 처리 실패: ", e);
-      alert("좋아요 처리에 실패했습니다.");
-    }
+    setLikeTogglePayload(isLiked ? {} : { isLike: true });
   };
 
-  // 댓글 생성 요청
-  const handleCreateComment = async (e) => {
+  const handleCreateComment = (e) => {
     e.preventDefault();
     if (!userId) {
       alert("로그인이 필요합니다.");
       return;
     }
-    // [수정 내용 주석] validator.js를 통한 댓글 입력 검사
     const errorMsg = validateComment(commentInput);
     if (errorMsg) {
       alert(errorMsg);
       return;
     }
-
-    try {
-      const response = await fetch(`http://localhost:8080/posts/${postId}/comments`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          commentContent: commentInput.trim(),
-          userId: Number(userId)
-        })
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      
-      setCommentInput('');
-      fetchComments();
-      fetchPostDetail(); // 총 댓글 개수 갱신
-    } catch (e) {
-      console.error(e);
-      alert("댓글 등록에 실패했습니다.");
-    }
+    setCreateCommentPayload({
+      commentContent: commentInput.trim(),
+      userId: Number(userId)
+    });
   };
 
-  // 댓글 수정 요청 
-  const handleSaveEditComment = async (commentId) => {
-    // validator.js를 통한 댓글 수정 검사
+  const handleSaveEditComment = (commentId) => {
     const errorMsg = validateComment(editCommentValue);
     if (errorMsg) {
       alert(errorMsg);
       return;
     }
-
-    try {
-      const response = await fetch(`http://localhost:8080/posts/${postId}/comments/${commentId}`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          commentContent: editCommentValue.trim(),
-          userId: Number(userId)
-        })
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      
-      setEditingCommentId(null);
-      setEditCommentValue('');
-      fetchComments();
-    } catch (e) {
-      console.error(e);
-      alert("댓글 수정에 실패했습니다.");
-    }
+    setEditCommentPayload({
+      commentId,
+      body: {
+        commentContent: editCommentValue.trim(),
+        userId: Number(userId)
+      }
+    });
   };
 
-  // 댓글 삭제 요청 
-  const handleConfirmDeleteComment = async () => {
+  const handleConfirmDeleteComment = () => {
     if (!commentToDelete) return;
-
-    try {
-      const response = await fetch(`http://localhost:8080/posts/${postId}/comments/${commentToDelete.commentId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: Number(userId)
-        })
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      
-      setCommentToDelete(null);
-      fetchComments();
-      fetchPostDetail(); // 총 댓글 개수 갱신
-    } catch (e) {
-      console.error(e);
-      alert("댓글 삭제에 실패했습니다.");
-    } finally {
-      setIsDeleteCommentModalOpen(false);
-    }
+    setDeleteCommentPayload({
+      commentId: commentToDelete.commentId,
+      body: {
+        userId: Number(userId)
+      }
+    });
+    setIsDeleteCommentModalOpen(false);
   };
 
 

@@ -49,8 +49,6 @@ export default function PostList() {
         };
     }, [hasMore, loading, loadMore]);
 
-    
-    // 수정 버튼 클리시 수정 페이지 이동
     const handleClick = useCallback((postId) => {
         navigate(`/post/${postId}`);
     }, [navigate]);

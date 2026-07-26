@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 
-// 단일 검사 함수 하나만 받는다.
 export function useInput(initialValue, validate) {
   const [value, setValue] = useState(initialValue);
   const [error, setError] = useState("");
@@ -20,5 +19,5 @@ export function useInput(initialValue, validate) {
         setError("");
     }, [initialValue]);
 
-  return { value, error, onChange, reset };
+  return { value, error, onChange, reset, setValue, setError };
 }

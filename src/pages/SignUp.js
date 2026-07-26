@@ -14,7 +14,6 @@ export default function SignUp() {
     const [profileFile, setProfileFile] = useState(null); // 실제 서버로 보낼 파일 객체
     const [previewUrl, setPreviewUrl] = useState("");     // 브라우저 렌더링용 임시 임베드 주소
 
-    // CustomHook으로 입력폼 유효성검사와 에러 관리하기
     const emailInput = useInput("", validateEmail);
     const passwordInput = useInput("", validatePassword);
     const passwordCheckInput = useInput("", (val) => validatePasswordCheck(passwordInput.value, val));
@@ -26,7 +25,7 @@ export default function SignUp() {
         passwordCheckInput.value && !passwordCheckInput.error &&
         nicknameInput.value && !nicknameInput.error;
 
-    // POST fetch
+    
     const { data: fetchedData, loading, error } = useFetch(
         signUpdata ? 'http://localhost:8080/users/signup' : null,
         {
@@ -37,7 +36,6 @@ export default function SignUp() {
         [signUpdata]
     );
 
-    //에러 또는 성공처리
     useEffect(() => {
         if (fetchedData) {
             alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
@@ -49,14 +47,13 @@ export default function SignUp() {
         if (error) {
             console.log(error.message);
             alert("회원가입 실패. 다시 시도해 주세요.");
-            setSignUpData(null); // 에러가 났으니 다음 클릭을 위해 상태 리셋
+            setSignUpData(null);
         }
     }, [error]);
 
-    // 가입 버튼 클릭(Form 제출)
     const handleSubmit = (e) => {
         e.preventDefault();
-        // 간단한 유효성 검사
+        
         if (isFormValid) {
             // TODO: new Format으로 해야하나? 무슨 차이인지
             setSignUpData({
@@ -86,7 +83,7 @@ export default function SignUp() {
 
 
 
-    // 로그인 하기 버튼 눌렀을 때 로그인 페이지로 이동
+    
     const handleGoToLogin = useCallback(() => {
         navigate(`/login`); 
     }, [navigate]);

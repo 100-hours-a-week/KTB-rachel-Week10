@@ -3,65 +3,117 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header.js';
 import { validatePostTitle, validatePostContent } from '../utils/validators.js';
 import { useAuth } from '../context/AuthContext.js'; 
+import useFetch from '../hooks/useFetch.js';
+import { useInput } from '../hooks/useInput.js';
 import '../css/post-detail.css'; 
 
 export default function PostWrite() {
-  const { currentUser } = useAuth(); // [수정 내용 주석] useAuth 훅 사용
+  const { currentUser } = useAuth();
   const user = currentUser;
   const userId = currentUser?.userId;
   const { postId } = useParams();
   const navigate = useNavigate();
   const isEditMode = !!postId;
 
-
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const titleInput = useInput("", validatePostTitle);
+  const { setValue: setTitleValue, setError: setTitleError } = titleInput;
+  const contentInput = useInput("", validatePostContent);
+  const { setValue: setContentValue, setError: setContentError } = contentInput;
   const [selectedFile, setSelectedFile] = useState(null);
   
-  // 유효성 및 헬퍼텍스트 상태
-  const [helperText, setHelperText] = useState('*제목, 내용을 모두 작성해주세요.');
-  const [isFormValid, setIsFormValid] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [postData, setPostData] = useState(null);
 
-  // 수정 모드인 경우 기존 게시글 정보 로드
+  const isFormValid =
+    titleInput.value.trim() !== '' && !titleInput.error &&
+    contentInput.value.trim() !== '' && !contentInput.error;
+
+
+  const { data: detailData, error: detailError } = useFetch(
+    isEditMode ? `http://localhost:8080/posts/${postId}` : null,
+    {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    },
+    [postId]
+  );
+
+  // 기존 게시글 정보 로드 성공 시 input 값 설정
   useEffect(() => {
-    if (!isEditMode) return;
-
-    const fetchPostDetail = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/posts/${postId}`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-          const resJson = await response.json();
-          setTitle(resJson.data.title || '');
-          setContent(resJson.data.content || '');
-        }
-      } catch (e) {
-        console.error("수정할 게시글 정보를 불러오는 데 실패했습니다: ", e);
-      }
-    };
-    fetchPostDetail();
-  }, [postId, isEditMode]);
-
-  // 실시간 유효성 검사 및 버튼 활성화 상태 제어
-  useEffect(() => {
-    const titleError = validatePostTitle(title);
-    const contentError = validatePostContent(content);
-
-    if (titleError) {
-      setHelperText(`*${titleError}`);
-      setIsFormValid(false);
-    } else if (contentError) {
-      setHelperText(`*${contentError}`);
-      setIsFormValid(false);
-    } else {
-      setHelperText('');
-      setIsFormValid(true);
+    if (detailData && detailData.data) {
+      const fetchedTitle = detailData.data.title || '';
+      const fetchedContent = detailData.data.content || '';
+      setTitleValue(fetchedTitle);
+      setTitleError(validatePostTitle(fetchedTitle));
+      setContentValue(fetchedContent);
+      setContentError(validatePostContent(fetchedContent));
     }
-  }, [title, content]);
+  }, [detailData, setTitleValue, setTitleError, setContentValue, setContentError]);
+
+  
+  useEffect(() => {
+    if (detailError) {
+      console.error("수정할 게시글 정보를 불러오는 데 실패했습니다: ", detailError);
+      alert("수정할 게시글 정보를 불러오는 데 실패했습니다.");
+    }
+  }, [detailError]);
+
+  
+  const { data: createData, loading: createLoading, error: createError } = useFetch(
+    (!isEditMode && postData) ? `http://localhost:8080/posts/users/${userId}` : null,
+    {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(postData)
+    },
+    [postData]
+  );
+
+
+  const { data: updateData, loading: updateLoading, error: updateError } = useFetch(
+    (isEditMode && postData) ? `http://localhost:8080/posts/${postId}` : null,
+    {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(postData)
+    },
+    [postData]
+  );
+
+  useEffect(() => {
+    if (createData) {
+      alert("게시글이 작성되었습니다.");
+      navigate('/posts');
+    }
+  }, [createData, navigate]);
+
+
+  useEffect(() => {
+    if (updateData) {
+      alert("게시글이 수정되었습니다.");
+      navigate('/posts');
+    }
+  }, [updateData, navigate]);
+
+  useEffect(() => {
+    if (createError) {
+      console.error(createError);
+      alert("게시글 작성에 실패했습니다.");
+      setPostData(null);
+    }
+  }, [createError]);
+
+  useEffect(() => {
+    if (updateError) {
+      console.error(updateError);
+      alert("게시글 수정에 실패했습니다.");
+      setPostData(null);
+    }
+  }, [updateError]);
+
+  const loading = createLoading || updateLoading;
 
   // 이미지 선택 핸들러
   const handleFileChange = (e) => {
@@ -73,52 +125,23 @@ export default function PostWrite() {
   };
 
   // 폼 제출 핸들러
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!userId) {
       alert("로그인이 필요합니다.");
       return;
     }
 
-    const titleError = validatePostTitle(title);
-    const contentError = validatePostContent(content);
-    if (titleError || contentError) {
-      alert(titleError || contentError);
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const url = isEditMode 
-        ? `http://localhost:8080/posts/${postId}`
-        : `http://localhost:8080/posts/users/${userId}`;
-
-      const method = isEditMode ? 'PATCH' : 'POST';
-
-      // 이미지명 바인딩 // TODO: 11주차 보고 이미지 DB 구축하기
+    if (isFormValid) {
       const imagesList = selectedFile ? [selectedFile.name] : [];
-
-      const response = await fetch(url, {
-        method: method,
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: content.trim(),
-          images: imagesList
-        })
+      setPostData({
+        title: titleInput.value.trim(),
+        content: contentInput.value.trim(),
+        images: imagesList
       });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      
-      alert(isEditMode ? "게시글이 수정되었습니다." : "게시글이 작성되었습니다.");
-      navigate('/posts');
-    } catch (e) {
-      console.error(e);
-      alert(isEditMode ? "게시글 수정에 실패했습니다." : "게시글 작성에 실패했습니다.");
-    } finally {
-      setLoading(false);
+    } else {
+      alert("입력 정보를 다시 확인해 주세요.");
     }
   };
 
@@ -126,7 +149,6 @@ export default function PostWrite() {
     <>
       <Header user={user} />
       <div className="post-write-container">
-        {/* 수정 모드 여부에 따른 타이틀 분기 */}
         <h1 className="post-write-page-title">
           {isEditMode ? "게시글 수정" : "게시글 작성"}
         </h1>
@@ -141,10 +163,13 @@ export default function PostWrite() {
               className="form-input" 
               placeholder="제목을 입력해주세요. (최대 26글자)" 
               maxLength="26"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={titleInput.value}
+              onChange={titleInput.onChange}
               required
             />
+            {titleInput.error && (
+              <p className="field__helper field__helper--error">* {titleInput.error}</p>
+            )}
           </div>
 
           {/* 내용 입력 구역 */}
@@ -154,18 +179,13 @@ export default function PostWrite() {
               id="postContentInput" 
               className="form-textarea" 
               placeholder="내용을 입력해주세요." 
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={contentInput.value}
+              onChange={contentInput.onChange}
               required
             ></textarea>
-          </div>
-
-          {/* 실시간 헬퍼 텍스트 영역 */}
-          <div 
-            id="writeHelperText" 
-            className={`helper-text ${helperText ? '' : 'hidden'}`}
-          >
-            {helperText}
+            {contentInput.error && (
+              <p className="field__helper field__helper--error">* {contentInput.error}</p>
+            )}
           </div>
 
           {/* 이미지 선택 구역 */}
@@ -181,7 +201,6 @@ export default function PostWrite() {
               />
             </div>
             {selectedFile && (
-              /* [수정 내용 주석] 인라인 스타일을 selected-file-info 클래스로 교체 */
               <span className="selected-file-info">
                 선택된 파일: {selectedFile.name}
               </span>

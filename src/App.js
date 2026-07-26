@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext.js'; // [수정 내용 주석] 전역 인증 프로바이더 임포트
+import { AuthProvider } from './context/AuthContext.js';
 import PostList from './pages/PostList.js';
 import SignUp from './pages/SignUp.js';
 import Login from './pages/Login.js';
@@ -12,6 +12,7 @@ import PostWrite from './pages/PostWrite.js';
 
 function App() {
   return (
+    // TODO: 스트릿모드 확인하기
     <AuthProvider> 
       <BrowserRouter>
         <div>

@@ -14,7 +14,6 @@ export default function Modal({
 }) {
   const dialogRef = useRef(null);
 
-  // 모달 오픈 상태 변화에 따라 Native HTML5 dialog 제어
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -30,7 +29,6 @@ export default function Modal({
     }
   }, [isOpen]);
 
-  // 뒷배경(Overlay) 영역 클릭 시 모달이 닫히도록 지원
   const handleOverlayClick = (e) => {
     if (e.target === dialogRef.current) {
       onClose();
@@ -58,7 +56,7 @@ export default function Modal({
         )}
         
         <div className="modal-actions">
-          {/* 취소 버튼 (.btn-cancel 특화 클래스 추가 적용) */}
+          {/* 취소 버튼 */}
           <button 
             type="button" 
             className="btn-save btn-cancel" 
@@ -67,7 +65,7 @@ export default function Modal({
             {cancelText}
           </button>
           
-          {/* 확인/작업 버튼 (isDanger 여부에 따라 클래스 분기) */}
+          {/* 확인/작업 버튼 */}
           <button 
             type="button" 
             className={isDanger ? "btn-withdraw" : "btn-save"} 

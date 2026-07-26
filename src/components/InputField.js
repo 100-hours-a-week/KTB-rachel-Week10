@@ -18,7 +18,7 @@ export default function InputField({
         {label}
       </label>
 
-      {/* 2. 입력창 영역 (autoComplete로 리액트 표준 변경) */}
+      {/* 2. 입력창 영역  */}
       <input
         type={type}
         id={id}
