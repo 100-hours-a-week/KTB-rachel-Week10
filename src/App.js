@@ -8,6 +8,8 @@ import UserInfoUpdate from './pages/UserInfoUpdate.js';
 import UserPasswordUpdate from './pages/PasswordUpdate.js';
 import PostDetail from './pages/PostDetail.js';
 import PostWrite from './pages/PostWrite.js';
+import ChatDetail from './pages/ChatDetail.js';
+
 
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
             <Route path="/post/write/:postId" element={<PostWrite />} />
             <Route path="/user/edit" element={<UserInfoUpdate />} />
             <Route path="/user/password" element={<UserPasswordUpdate />} />
+            <Route path="/chat-detail/:roomId" element={<ChatDetail />} />
           </Routes>
         </div>
       </BrowserRouter>

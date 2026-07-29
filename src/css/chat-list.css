@@ -1,0 +1,303 @@
+/* ============================================================
+   Chat List Page — 채팅방 목록
+   카카오톡 스타일 리스트
+   ============================================================ */
+@import "./tokens.css";
+
+.chat-list-page {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  font-family: var(--font-sans);
+}
+
+.chat-list-main {
+  max-width: 480px;           /* 모바일 채팅앱 폭 */
+  margin: 0 auto;
+  background: var(--color-surface);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+}
+
+/* ── 상단 바 ── */
+.chat-list-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-list-topbar__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.chat-list-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* 아이콘 버튼 공통 */
+.icon-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.icon-btn:hover {
+  background: var(--blue-50);
+  color: var(--color-primary);
+}
+
+/* ── 검색 바 ── */
+.chat-search {
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.chat-search__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.chat-search__icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  display: flex;
+}
+
+.chat-search__input {
+  width: 100%;
+  padding: var(--space-2) var(--space-4) var(--space-2) 2.25rem;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--blue-50);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: #1e293b;
+  outline: none;
+  transition: background var(--transition-base), box-shadow var(--transition-base);
+  box-sizing: border-box;
+}
+
+.chat-search__input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.chat-search__input:focus {
+  background: var(--color-surface);
+  box-shadow: 0 0 0 2px var(--blue-200);
+}
+
+/* ── 채팅방 목록 ── */
+.chat-room-list {
+  flex: 1;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+}
+
+/* 채팅방 아이템 */
+.chat-room-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+  border-bottom: 1px solid rgba(219 234 254 / 0.40);
+  transition: background var(--transition-fast);
+  position: relative;
+}
+
+.chat-room-item:hover {
+  background: var(--blue-50);
+}
+
+.chat-room-item:active {
+  background: var(--blue-100);
+}
+
+/* 채팅방 썸네일 (그룹 아이콘) */
+.chat-room-item__thumb {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.chat-room-item__thumb-img {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-xl);
+  object-fit: cover;
+  background: var(--blue-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;    /* 이모지 또는 이니셜 */
+  font-weight: 700;
+  color: var(--color-primary);
+  overflow: hidden;
+}
+
+/* 단체 채팅방 — 멤버 아바타 2×2 그리드 */
+.chat-room-item__thumb--group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5px;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--blue-200);
+}
+
+.chat-room-item__thumb-cell {
+  background: var(--blue-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* 안읽은 메시지 뱃지 */
+.chat-room-item__unread {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 0.625rem;   /* 10px */
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-surface);
+  box-sizing: border-box;
+}
+
+.chat-room-item__unread--alarm-off {
+  background: var(--color-text-secondary);
+}
+
+/* 텍스트 영역 */
+.chat-room-item__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.chat-room-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.chat-room-item__name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* 멤버 수 */
+.chat-room-item__count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.chat-room-item__time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 마지막 메시지 */
+.chat-room-item__preview {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+/* 알림 꺼짐 아이콘 */
+.chat-room-item__mute {
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── 고정 채팅방 영역 구분 ── */
+.chat-list-section-label {
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--blue-50);
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ── 빈 상태 ── */
+.chat-list-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-12);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.chat-list-empty__icon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+.chat-list-empty__text {
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  margin: 0;
+}
