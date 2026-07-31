@@ -43,7 +43,7 @@ export default function PostDetail() {
 
   // 게시글 조회
   const { data: postDetailData, loading: postLoading, error: postError } = useFetch(
-    `http://localhost:8080/posts/${postId}`,
+    `/posts/${postId}`,
     {
       method: 'GET',
       credentials: 'include',
@@ -54,7 +54,7 @@ export default function PostDetail() {
 
   // 게시글 삭제
   const { data: deletePostResult, error: deletePostError } = useFetch(
-    deletePostPayload ? `http://localhost:8080/posts/${postId}` : null,
+    deletePostPayload ? `/posts/${postId}` : null,
     {
       method: 'DELETE',
       credentials: 'include',
@@ -66,7 +66,7 @@ export default function PostDetail() {
 
   // 좋아요 토글 요청 (POST/DELETE)
   const { data: likeToggleResult, error: likeToggleError } = useFetch(
-    likeTogglePayload ? `http://localhost:8080/posts/${postId}/${userId}/likes` : null,
+    likeTogglePayload ? `/posts/${postId}/${userId}/likes` : null,
     {
       method: isLiked ? 'DELETE' : 'POST',
       credentials: 'include',
@@ -78,7 +78,7 @@ export default function PostDetail() {
 
   // 댓글 생성
   const { data: createCommentResult, error: createCommentError } = useFetch(
-    createCommentPayload ? `http://localhost:8080/posts/${postId}/comments` : null,
+    createCommentPayload ? `/posts/${postId}/comments` : null,
     {
       method: 'POST',
       credentials: 'include',
@@ -90,7 +90,7 @@ export default function PostDetail() {
 
   // 댓글 수정
   const { data: editCommentResult, error: editCommentError } = useFetch(
-    editCommentPayload ? `http://localhost:8080/posts/${postId}/comments/${editCommentPayload.commentId}` : null,
+    editCommentPayload ? `/posts/${postId}/comments/${editCommentPayload.commentId}` : null,
     {
       method: 'PATCH',
       credentials: 'include',
@@ -102,7 +102,7 @@ export default function PostDetail() {
 
   // 댓글 삭제
   const { data: deleteCommentResult, error: deleteCommentError } = useFetch(
-    deleteCommentPayload ? `http://localhost:8080/posts/${postId}/comments/${deleteCommentPayload.commentId}` : null,
+    deleteCommentPayload ? `/posts/${postId}/comments/${deleteCommentPayload.commentId}` : null,
     {
       method: 'DELETE',
       credentials: 'include',
@@ -353,7 +353,7 @@ export default function PostDetail() {
 
             <div className="post-article__content">
               {post.images && post.images.map((img, idx) => (
-                img && <img key={idx} src={`http://localhost:8080/images/${img}`} alt="게시글 이미지" className="post-article__image" />
+                img && <img key={idx} src={`/images/${img}`} alt="게시글 이미지" className="post-article__image" />
               ))}
               <div className="post-article__paragraph">{post.content}</div>
             </div>

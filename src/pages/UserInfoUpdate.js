@@ -41,7 +41,7 @@ export default function UserInfoUpdate() {
 
     // 회원정보 수정
     const { data: fetchedData, error: patchError } = useFetch(
-        patchPayload ? `http://localhost:8080/users/${userId}` : null,
+        patchPayload ? `/users/${userId}` : null,
         {
             method: 'PATCH',
             credentials: "include",
@@ -53,7 +53,7 @@ export default function UserInfoUpdate() {
 
     // 회원 탈퇴
     const { data: deleteData, error: deleteError } = useFetch(
-        shouldDelete ? `http://localhost:8080/users/${userId}` : null,
+        shouldDelete ? `/users/${userId}` : null,
         {
             method: 'DELETE',
             credentials: "include"

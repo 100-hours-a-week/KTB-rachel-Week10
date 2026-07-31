@@ -30,14 +30,14 @@ const ChatFeed = forwardRef(({ messages, currentUserId }, ref) => {
         const isContMsg = prevMsg && 
                           prevMsg.type === 'TALK' && 
                           msg.type === 'TALK' && 
-                          prevMsg.senderId === msg.senderId && 
+                          String(prevMsg.senderId) === String(msg.senderId) && 
                           prevMsg.sendTime === msg.sendTime;
 
         // 연속 메시지 그룹 중 마지막 대화 상자 옆에만 시각을 보여주기 위한 조건
         const nextMsg = index < messages.length - 1 ? messages[index + 1] : null;
         const isNextCont = nextMsg && 
                            nextMsg.type === 'TALK' && 
-                           nextMsg.senderId === msg.senderId && 
+                           String(nextMsg.senderId) === String(msg.senderId) && 
                            nextMsg.sendTime === msg.sendTime;
         const showTime = !isNextCont;
 
@@ -45,13 +45,13 @@ const ChatFeed = forwardRef(({ messages, currentUserId }, ref) => {
         if (msg.type === 'SYSTEM') {
           return (
             <div key={msg.messageId} className="chat-system-msg">
-              <span className="chat-system-msg__text">{msg.content}</span>
+              <span className="chat-system-msg__text">{msg.message}</span>
             </div>
           );
         }
 
-        const isMine = msg.senderId === currentUserId;
-        const emojiOnly = checkEmojiOnly(msg.content);
+        const isMine = String(msg.senderId) === String(currentUserId);
+        const emojiOnly = checkEmojiOnly(msg.message);
 
         return (
           <React.Fragment key={msg.messageId}>
@@ -78,7 +78,7 @@ const ChatFeed = forwardRef(({ messages, currentUserId }, ref) => {
                   <span className="msg-sender">{msg.senderNickname}</span>
                 )}
                 <div className={`msg-bubble ${isMine ? 'msg-bubble--mine' : 'msg-bubble--other'} ${emojiOnly ? 'msg-bubble--emoji-only' : ''}`}>
-                  {msg.content}
+                  {msg.message}
                 </div>
               </div>
 

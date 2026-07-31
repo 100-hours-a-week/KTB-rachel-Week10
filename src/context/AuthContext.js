@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const loggedInUserId = sessionStorage.getItem('userId');
 
   const { data: userData, loading, error } = useFetch(
-    loggedInUserId ? `http://localhost:8080/users/me` : null,
+    loggedInUserId ? `/users/me` : null,
     {
       method: 'GET',
       credentials: 'include',

@@ -27,7 +27,7 @@ export default function SignUp() {
 
     
     const { data: fetchedData, loading, error } = useFetch(
-        signUpdata ? 'http://localhost:8080/users/signup' : null,
+        signUpdata ? '/users/signup' : null,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

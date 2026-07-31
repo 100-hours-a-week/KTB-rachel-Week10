@@ -25,7 +25,7 @@ export default function Login() {
         passwordInput.value && !passwordInput.error;
 
     const { data: fetchedData, loading, error } = useFetch(
-        logindata ? 'http://localhost:8080/users/login' : null,
+        logindata ? '/users/login' : null,
         {
           method: 'POST',
           credentials: "include",

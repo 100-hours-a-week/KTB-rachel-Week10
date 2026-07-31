@@ -30,7 +30,7 @@ export default function UserPasswordUpdate() {
         passwordCheckInput.value && !passwordCheckInput.error;
 
     const { data: fetchedData, loading, error } = useFetch(
-        passwordData ? `http://localhost:8080/users/${userId}/password` : null,
+        passwordData ? `/users/${userId}/password` : null,
         {
             method: 'PUT',
             credentials: "include",

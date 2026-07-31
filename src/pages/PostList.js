@@ -14,7 +14,7 @@ export default function PostList() {
 
     // 인피니티 스크롤
     const { data: posts, loading, error, hasMore, loadMore } = useLoadData(
-        `http://localhost:8080/posts`, 
+        `/posts`, 
         10
     );
     

@@ -34,15 +34,29 @@ export default function ChatDetail() {
     // STOMP Client 객체를 첫렌더링 시에 생성
     useEffect(() => {
     client.current = new Client({ // STOMP 프로토콜을 사용할 수 있게 해주는 'STOMP Client 객체'
-        brokerURL: 'ws://localhost:8080/ws',
+        brokerURL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'ws://localhost:8080/ws'
+            : (window.location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + window.location.host + '/ws',
 
         onConnect: (frame) => {
             console.log('소켓 연결 성공');
 
             client.current.subscribe(`/subscribe/chat.${roomId}`, (message) => {
-                console.log('받은 메시지' + message.body);
                 const received = JSON.parse(message.body);
-                setMessages((prev) => [...prev, received]); // 구독하자자 받을게잇어?
+                console.log('🔔 소켓 수신 데이터 객체:', received); // ⭕ 객체 구조를 콘솔에서 펼쳐볼 수 있게 수정
+                
+                // 프론트 피드가 이해할 수 있는 규격(NaN 방지)으로 조립하여 반영
+                const formatted = {
+                  messageId: Date.now() + Math.random(),
+                  type: 'TALK',
+                  message: received.message,
+                  senderId: received.senderId, // 백엔드 DTO 규격인 senderId 로 매칭
+                  senderNickname: received.senderNickname, // 백엔드 DTO 규격인 senderNickname 으로 매칭
+                  sendTime: formatTime(new Date()),
+                  date: formatDate(new Date()),
+                  unreadCount: 0,
+                };
+                setMessages((prev) => [...prev, formatted]);
             });
         },
 
@@ -54,7 +68,9 @@ export default function ChatDetail() {
     client.current.activate();
 
     return () => {
-        client.current.deactivate();
+        if (client.current) {
+            client.current.deactivate();
+        }
     };
 
     }, [roomId]); 
@@ -62,30 +78,22 @@ export default function ChatDetail() {
     const handleSend = () => {
         if (!inputText.trim() || !client.current || !client.current.connected) return;
 
-        const newMsg = {
-        messageId: Date.now(),
-        type: 'TALK',
-        content: inputText,
-        senderId: currentUserId,
-        senderNickname: currentUserNickname, // PrinciPal 객체로 서버에서는 가져다 쓰는데 프론트에서는 어떻게 쓰지?
-        sendTime: formatTime(new Date()),
-        date: formatDate(new Date()),
-        unreadCount: 3, // TODO: 가상 남은 인원
-        };
-
-        setMessages((prev) => [...prev, newMsg]);
+        // ❌ 로컬 렌더링 코드를 뺍니다. (서버에서 반사되어 오는 소켓 메시지로만 1번 그리게 통일)
         setInputText('');
 
         client.current.publish({
             destination: `/publish/chat.${roomId}`,
             body: JSON.stringify({ 
-                sender: currentUserId, // 보통 dto에 nickname, id 둘다 받아? 아님 인증객체 Principal에 의해서 .getNickname 할 수 있으니까 id 하나만 가져와? - 실무에서는 보안상 이유로 최소한만가져오고 서버내부에서 직접 꺼내 쓴다
+                sender: currentUserNickname, // DTO 구성에 맞게 보낸이 닉네임 전달
                 message: inputText 
             })
         });
     };
 
     const handleKeyDown = (e) => {
+    // 한글 조합 중(글자 아래 밑줄쳐진 상태)일 때는 중복 이벤트 전송을 방지
+    if (e.nativeEvent.isComposing) return;
+
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         handleSend();

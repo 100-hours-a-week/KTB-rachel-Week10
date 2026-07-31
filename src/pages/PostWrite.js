@@ -29,7 +29,7 @@ export default function PostWrite() {
 
 
   const { data: detailData, error: detailError } = useFetch(
-    isEditMode ? `http://localhost:8080/posts/${postId}` : null,
+    isEditMode ? `/posts/${postId}` : null,
     {
       method: 'GET',
       credentials: 'include',
@@ -60,7 +60,7 @@ export default function PostWrite() {
 
   
   const { data: createData, loading: createLoading, error: createError } = useFetch(
-    (!isEditMode && postData) ? `http://localhost:8080/posts/users/${userId}` : null,
+    (!isEditMode && postData) ? `/posts/users/${userId}` : null,
     {
       method: 'POST',
       credentials: 'include',
@@ -72,7 +72,7 @@ export default function PostWrite() {
 
 
   const { data: updateData, loading: updateLoading, error: updateError } = useFetch(
-    (isEditMode && postData) ? `http://localhost:8080/posts/${postId}` : null,
+    (isEditMode && postData) ? `/posts/${postId}` : null,
     {
       method: 'PATCH',
       credentials: 'include',

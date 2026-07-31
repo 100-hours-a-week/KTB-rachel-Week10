@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/toastMessage.css'; 
+import '../css/toast-message.css'; 
 
 export default function ToastMessage({ show, message, onClick, id }) {
   return (
