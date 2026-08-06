@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header.js';
+import ChatEntryModal from '../components/chat/ChatEntryModal.js';
 import { validatePostTitle, validatePostContent } from '../utils/validators.js';
 import { useAuth } from '../context/AuthContext.js'; 
 import useFetch from '../hooks/useFetch.js';
@@ -20,6 +21,7 @@ export default function PostWrite() {
   const contentInput = useInput("", validatePostContent);
   const { setValue: setContentValue, setError: setContentError } = contentInput;
   const [selectedFile, setSelectedFile] = useState(null);
+  const [chatData, setChatData] = useState({ createChat: false, title: '', summary: '' });
   
   const [postData, setPostData] = useState(null);
 
@@ -48,8 +50,7 @@ export default function PostWrite() {
       setContentValue(fetchedContent);
       setContentError(validatePostContent(fetchedContent));
     }
-  }, [detailData, setTitleValue, setTitleError, setContentValue, setContentError]);
-
+  }, [detailData, setTitleValue, setTitleError, setContentValue, setContentError]); 
   
   useEffect(() => {
     if (detailError) {
@@ -64,8 +65,8 @@ export default function PostWrite() {
     {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData)
+      headers: {},
+      body: postData
     },
     [postData]
   );
@@ -124,8 +125,9 @@ export default function PostWrite() {
     }
   };
 
+
   // 폼 제출 핸들러
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!userId) {
@@ -133,15 +135,44 @@ export default function PostWrite() {
       return;
     }
 
-    if (isFormValid) {
-      const imagesList = selectedFile ? [selectedFile.name] : [];
-      setPostData({
+    if(!isFormValid) {
+      alert("입력 정보를 다시 확인해 주세요.");
+      return;
+    }
+
+    try {
+      const payload = {
         title: titleInput.value.trim(),
         content: contentInput.value.trim(),
-        images: imagesList
-      });
-    } else {
-      alert("입력 정보를 다시 확인해 주세요.");
+      };
+      
+      if (chatData.createChat) {
+        payload.chatRoom = {
+          title: chatData.title,
+          summary: chatData.summary
+        };
+      }
+      
+      console.log("스프링에게 보내는 Dto를 확인해보아요: ", payload);
+      
+      if (isEditMode) {
+        setPostData(payload);
+      } else {
+        const formData = new FormData();
+        
+        if (selectedFile) {
+          formData.append("file", selectedFile);
+        }
+        
+        formData.append("request", new Blob([JSON.stringify(payload)], {
+          type: "application/json"
+        }));
+        
+        setPostData(formData);
+      }
+    } catch (error) {
+      console.error("제출 중 오류 발생:", error);
+      alert(error.message || "오류가 발생했습니다.");
     }
   };
 
@@ -207,6 +238,9 @@ export default function PostWrite() {
             )}
           </div>
 
+          {/* 채팅방 생성하기 모달 */}
+          <ChatEntryModal chatData={chatData} setChatData={setChatData} />
+          
           {/* 완료 버튼 */}
           <div className="form-submit-row">
             <button 

@@ -619,3 +619,284 @@
 }
 
 
+/* ════════════════════════════════════════
+   채팅으로 연습하기 버튼 블록
+   (채팅방이 연결된 게시글에만 노출)
+   ════════════════════════════════════════ */
+.post-chat-entry {
+  margin-top: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+  background: linear-gradient(135deg, var(--blue-50) 0%, #eef6ff 100%);
+  border: 1px solid var(--blue-100);
+  border-radius: var(--radius-2xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* 채팅 아이콘 버블 */
+.post-chat-entry__icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-xl);
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.post-chat-entry__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.post-chat-entry__label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 2px;
+}
+
+.post-chat-entry__name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-chat-entry__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* 채팅으로 연습하기 버튼 */
+.btn-enter-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  transition:
+    background var(--transition-base),
+    transform var(--transition-fast),
+    box-shadow var(--transition-base);
+}
+
+.btn-enter-chat:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-enter-chat:active {
+  transform: scale(0.97);
+}
+
+.btn-enter-chat__arrow {
+  display: inline-flex;
+  transition: transform var(--transition-base);
+}
+
+.btn-enter-chat:hover .btn-enter-chat__arrow {
+  transform: translateX(2px);
+}
+
+
+/* ════════════════════════════════════════
+   채팅방 추가 진입점 버튼
+   ════════════════════════════════════════ */
+
+/* 기본 상태 — [ + 💬 채팅방 추가하기 ] */
+.btn-add-chat {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1.5px dashed var(--blue-200);
+  background: var(--blue-50);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.btn-add-chat:hover {
+  background: var(--blue-100);
+  border-color: var(--blue-300);
+}
+
+.btn-add-chat:active {
+  transform: scale(0.99);
+}
+
+.btn-add-chat__icon {
+  font-size: var(--font-size-md);
+  flex-shrink: 0;
+}
+
+/* 완료 상태 — [ ✓ 채팅방이 추가되었습니다 (수정) ] */
+.btn-add-chat--done {
+  border-style: solid;
+  border-color: var(--blue-200);
+  background: var(--color-surface);
+  color: #16a34a;             /* 초록 체크 */
+  cursor: default;
+}
+
+.btn-add-chat--done:hover {
+  background: var(--color-surface);
+  border-color: var(--blue-200);
+}
+
+/* (수정) 링크 텍스트 */
+.btn-add-chat__edit-link {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: var(--space-1);
+  transition: color var(--transition-base);
+}
+
+.btn-add-chat__edit-link:hover {
+  color: var(--color-primary-hover);
+}
+
+/* ════════════════════════════════════════
+   팝업 모달창 (Dim 오버레이 및 컨테이너)
+   ════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-xl, 16px);
+  padding: var(--space-5, 24px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+}
+
+.modal-title {
+  font-size: var(--font-size-lg, 18px);
+  font-weight: 700;
+  color: var(--color-text-heading, #111827);
+  margin-bottom: var(--space-2, 8px);
+}
+
+/* ════════════════════════════════════════
+   모달 내부 폼 요소 (입력창, 카운터, 에러)
+   ════════════════════════════════════════ */
+.input-wrapper {
+  position: relative;
+}
+
+.form-input {
+  padding-bottom: var(--space-6, 24px); /* 카운터 공간 확보 */
+}
+
+.char-counter {
+  position: absolute;
+  right: var(--space-2, 8px);
+  bottom: var(--space-2, 8px);
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+.form-input--error {
+  border-color: var(--color-error, #ef4444) !important;
+}
+
+.char-counter--error {
+  color: var(--color-error, #ef4444);
+}
+
+.error-message {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-error, #ef4444);
+  margin-top: var(--space-1, 4px);
+}
+
+/* ════════════════════════════════════════
+   모달 액션 버튼 (취소 / 저장)
+   ════════════════════════════════════════ */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2, 8px);
+  margin-top: var(--space-2, 8px);
+}
+
+.modal-btn-cancel {
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  background: transparent;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-text-secondary, #4b5563);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.modal-btn-cancel:hover {
+  background: var(--color-surface-muted, #f3f4f6);
+}
+
+.modal-btn-submit {
+  padding: var(--space-2, 8px) var(--space-4, 16px);
+  background: var(--color-primary, #3b82f6);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-primary-text, #ffffff);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+}
+
+.modal-btn-submit:hover {
+  opacity: 0.9;
+}

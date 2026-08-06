@@ -265,6 +265,21 @@
   visibility: hidden;
 }
 
+/* 방장 아바타 및 왕관 아이콘 */
+.msg-avatar--host {
+  position: relative;
+}
+
+.msg-avatar__crown {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
 /* ── 메시지 본체 ── */
 .msg-body {
   display: flex;
@@ -523,3 +538,451 @@
   line-height: 1.5;
 }
 
+
+/* ════════════════════════════════════════
+   햄버거 버튼
+   ════════════════════════════════════════ */
+.chat-header__hamburger {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.chat-header__hamburger:hover {
+  background: var(--blue-50);
+  color: var(--color-primary);
+}
+
+/* 햄버거 줄 3개 */
+.chat-header__hamburger-line {
+  display: block;
+  width: 1.1rem;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+/* 드로어 열릴 때 X 모양으로 변환 (JS에서 .is-open 토글) */
+.chat-header__hamburger.is-open .chat-header__hamburger-line:nth-child(1) {
+  transform: translateY(5.5px) rotate(45deg);
+}
+.chat-header__hamburger.is-open .chat-header__hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.chat-header__hamburger.is-open .chat-header__hamburger-line:nth-child(3) {
+  transform: translateY(-5.5px) rotate(-45deg);
+}
+
+
+/* ════════════════════════════════════════
+   드로어 — 오른쪽에서 슬라이드
+   ════════════════════════════════════════ */
+
+/* 드로어 Dimmed Overlay */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(15 23 42 / 0.40);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 1;
+  transition: opacity var(--transition-slow);
+}
+
+.drawer-overlay--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 드로어 패널 */
+.chat-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 110;
+  width: min(22rem, 88vw);    /* 352px 또는 뷰포트의 88% */
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 32px rgba(29 78 216 / 0.12);
+  transform: translateX(0);
+  transition: transform var(--transition-slow) cubic-bezier(0.32, 0, 0, 1);
+  overflow: hidden;
+}
+
+.chat-drawer--hidden {
+  transform: translateX(100%);
+}
+
+/* ── 드로어 헤더 ── */
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.drawer-header__title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.drawer-header__close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.drawer-header__close:hover {
+  background: var(--blue-50);
+  color: #1e293b;
+}
+
+/* ── 드로어 스크롤 영역 ── */
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) 0;
+}
+
+.drawer-body::-webkit-scrollbar { width: 4px; }
+.drawer-body::-webkit-scrollbar-track { background: transparent; }
+.drawer-body::-webkit-scrollbar-thumb {
+  background: rgba(29 78 216 / 0.12);
+  border-radius: 2px;
+}
+
+/* ── 드로어 섹션 ── */
+.drawer-section {
+  padding: 0 var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.drawer-section__label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* ════════════════════════════════════════
+   채팅방 정보 수정 폼 (드로어 내부)
+   ════════════════════════════════════════ */
+.drawer-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* 필드 그룹 */
+.drawer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.drawer-field__label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-body);
+  margin-bottom: var(--space-1);
+}
+
+.drawer-field__input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: #1e293b;
+  outline: none;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  box-sizing: border-box;
+}
+
+.drawer-field__input::placeholder {
+  color: var(--color-text-placeholder);
+  font-size: var(--font-size-xs);
+}
+
+.drawer-field__input:focus {
+  border-color: var(--blue-400, #60a5fa);
+  box-shadow: 0 0 0 2px rgba(29 78 216 / 0.10);
+}
+
+/* 공지 텍스트에어리어 */
+.drawer-field__textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: #1e293b;
+  line-height: 1.6;
+  resize: none;
+  min-height: 5rem;
+  outline: none;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base);
+  box-sizing: border-box;
+}
+
+.drawer-field__textarea::placeholder {
+  color: var(--color-text-placeholder);
+  font-size: var(--font-size-xs);
+}
+
+.drawer-field__textarea:focus {
+  border-color: var(--blue-400, #60a5fa);
+  box-shadow: 0 0 0 2px rgba(29 78 216 / 0.10);
+}
+
+/* 저장 버튼 */
+.drawer-btn-save {
+  width: 100%;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    background var(--transition-base),
+    transform var(--transition-fast);
+}
+
+.drawer-btn-save:hover {
+  background: var(--color-primary-hover);
+}
+
+.drawer-btn-save:active {
+  transform: scale(0.98);
+}
+
+/* ── 섹션 구분선 ── */
+.drawer-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-2) var(--space-5) var(--space-6);
+}
+
+/* ════════════════════════════════════════
+   멤버 목록 (드로어 내부)
+   ════════════════════════════════════════ */
+
+/* 멤버 수 뱃지 */
+.drawer-member-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--blue-100);
+  color: var(--color-primary);
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+/* 멤버 리스트 */
+.drawer-member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drawer-member-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast);
+}
+
+.drawer-member-item:hover {
+  background: var(--blue-50);
+}
+
+/* 멤버 아바타 */
+.drawer-member-item__avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  background: var(--blue-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* 방장 왕관 아이콘 */
+.drawer-member-item__avatar--host {
+  position: relative;
+}
+
+.drawer-member-item__crown {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* 멤버 이름 + 상태 */
+.drawer-member-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-member-item__name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* 방장 뱃지 */
+.drawer-member-item__host-badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--blue-100);
+  border-radius: var(--radius-full);
+  padding: 1px var(--space-1);
+  flex-shrink: 0;
+}
+
+/* 나 (본인) 표시 */
+.drawer-member-item__me-badge {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: #f1f5f9;
+  border-radius: var(--radius-full);
+  padding: 1px var(--space-1);
+  flex-shrink: 0;
+}
+
+.drawer-member-item__status {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── 드로어 하단 고정 — 나가기 버튼 ── */
+.drawer-footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.drawer-btn-leave {
+  width: 100%;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-error-border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-error);
+  cursor: pointer;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.drawer-btn-leave:hover {
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+}
+
+/* ── 위험 구역 (방 삭제 등) ── */
+.drawer-section--danger {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.drawer-section__label--danger {
+  color: var(--red-500, #ef4444);
+}
+
+.drawer-btn-danger {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--red-50, #fef2f2);
+  color: var(--red-500, #ef4444);
+  border: 1px solid var(--red-200, #fecaca);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.drawer-btn-danger:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}

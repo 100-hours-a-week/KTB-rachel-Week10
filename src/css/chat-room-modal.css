@@ -1,0 +1,307 @@
+/* ============================================================
+   Chat Room Modal — 채팅방 생성 팝업
+   진입점 버튼 · Dimmed Overlay · 모달 폼 · 유효성 · 액션 버튼
+   ============================================================ */
+@import "./tokens.css";
+
+/* ════════════════════════════════════════
+   Dimmed Overlay (배경 어두운 반투명)
+   ════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(15 23 42 / 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+
+  /* 진입/퇴장 */
+  opacity: 1;
+  transition: opacity var(--transition-slow);
+}
+
+.modal-overlay--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════
+   모달 컨테이너
+   ════════════════════════════════════════ */
+.chat-modal {
+  width: 100%;
+  max-width: 26rem;           /* 416px */
+  background: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  transform: translateY(0) scale(1);
+  transition:
+    transform var(--transition-slow),
+    opacity var(--transition-slow);
+}
+
+.modal-overlay--hidden .chat-modal {
+  transform: translateY(12px) scale(0.97);
+  opacity: 0;
+}
+
+/* ── 모달 헤더 ── */
+.chat-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.chat-modal__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chat-modal__icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  background: var(--blue-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.chat-modal__title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+/* 닫기 버튼 */
+.chat-modal__close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+.chat-modal__close:hover {
+  background: var(--blue-50);
+  color: #1e293b;
+}
+
+/* ── 모달 본문 ── */
+.chat-modal__body {
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* 안내 문구 */
+.chat-modal__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--blue-50);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--blue-200);
+}
+
+/* ── 필드 그룹 ── */
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.modal-field__label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-body);
+  margin-bottom: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* 선택 뱃지 */
+.modal-field__optional {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: #f1f5f9;
+  border-radius: var(--radius-full);
+  padding: 1px var(--space-2);
+}
+
+/* 인풋 래퍼 (카운터 위치 기준) */
+.modal-field__input-wrap {
+  position: relative;
+}
+
+/* 인풋 — 기본 */
+.modal-field__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: #1e293b;
+  outline: none;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    background var(--transition-base);
+  box-sizing: border-box;
+  /* 카운터 공간 확보 */
+  padding-bottom: 1.75rem;
+}
+
+.modal-field__input::placeholder {
+  color: var(--color-text-placeholder);
+  font-size: var(--font-size-xs);
+}
+
+.modal-field__input:focus {
+  border-color: var(--blue-400, #60a5fa);
+  box-shadow: 0 0 0 3px rgba(29 78 216 / 0.10);
+}
+
+/* 인풋 — 글자 수 초과 에러 */
+.modal-field__input--over {
+  border-color: var(--color-error-border);
+  background: var(--color-error-bg);
+}
+
+.modal-field__input--over:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239 68 68 / 0.12);
+}
+
+/* 글자 수 카운터 (인풋 우측 하단 절대 위치) */
+.modal-field__counter {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  line-height: 1;
+  transition: color var(--transition-base);
+}
+
+.modal-field__counter--over {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+/* 에러 메시지 */
+.modal-field__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* 공란 처리 안내 (회색 hint) */
+.modal-field__hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ── 모달 하단 액션 버튼 ── */
+.chat-modal__footer {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6) var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+/* 취소 버튼 */
+.btn-modal-cancel {
+  flex: 1;
+  padding: var(--space-3) 0;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-body);
+  cursor: pointer;
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.btn-modal-cancel:hover {
+  background: var(--blue-50);
+  border-color: var(--blue-200);
+}
+
+/* 저장(추가) 버튼 — 활성 */
+.btn-modal-save {
+  flex: 1;
+  padding: var(--space-3) 0;
+  border-radius: var(--radius-lg);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    background var(--transition-base),
+    transform var(--transition-fast),
+    box-shadow var(--transition-base);
+}
+
+.btn-modal-save:hover {
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-modal-save:active {
+  transform: scale(0.98);
+}
+
+/* 저장 버튼 — 비활성 (글자 수 초과 시) */
+.btn-modal-save:disabled,
+.btn-modal-save--disabled {
+  background: var(--color-primary-disabled);
+  color: var(--color-primary-text-disabled);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}

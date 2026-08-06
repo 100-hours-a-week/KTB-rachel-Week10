@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { validateComment} from '../utils/validators.js';
 import Header from '../components/Header.js';
@@ -40,7 +40,7 @@ export default function PostDetail() {
   const [createCommentPayload, setCreateCommentPayload] = useState(null);
   const [editCommentPayload, setEditCommentPayload] = useState(null);
   const [deleteCommentPayload, setDeleteCommentPayload] = useState(null);
-
+  
   // 게시글 조회
   const { data: postDetailData, loading: postLoading, error: postError } = useFetch(
     `/posts/${postId}`,
@@ -115,6 +115,8 @@ export default function PostDetail() {
   const post = postDetailData?.data || null;
   const comments = postDetailData?.data?.comments || [];
   const loading = postLoading && !postDetailData;
+  const chatRoomId = postDetailData?.data?.roomId;
+  const hasChatRoom = !!chatRoomId;
   const error = postError;
 
   /* 후속처리 useEffect */
@@ -293,6 +295,12 @@ export default function PostDetail() {
     setIsDeleteCommentModalOpen(false);
   };
 
+  const handleGoToChat = useCallback(() => {
+    if (chatRoomId) {
+      navigate(`/chat-detail/${chatRoomId}`);
+    }
+  }, [chatRoomId, navigate]);
+
 
   if (loading) return <div className="post-detail-loading">로딩 중...</div>;
   if (error) return <div className="post-detail-error">에러가 발생했습니다: {error.message}</div>;
@@ -358,13 +366,23 @@ export default function PostDetail() {
               <div className="post-article__paragraph">{post.content}</div>
             </div>
 
-            <PostStat 
-              isLiked={isLiked}
-              likeCount={likeCount}
-              handleLikeToggle={handleLikeToggle}
-              viewCount={post.viewCount}
-              commentCount={comments.length}
-            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+              <PostStat 
+                isLiked={isLiked}
+                likeCount={likeCount}
+                handleLikeToggle={handleLikeToggle}
+                viewCount={post.viewCount}
+                commentCount={comments.length}
+              />
+              {hasChatRoom && (
+                <button type="button" id="goToChat" className="btn-chat-practice" onClick={handleGoToChat}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  채팅으로 연습하기
+                </button>
+              )}
+            </div>
           </article>
 
           <CommentSection

@@ -67,8 +67,9 @@ const ChatFeed = forwardRef(({ messages, currentUserId }, ref) => {
               
               {/* 상대방 아바타 (연속 메시지일 경우 hidden 처리하여 공간만 확보) */}
               {!isMine && (
-                <div className={`msg-avatar ${isContMsg ? 'msg-avatar--hidden' : ''}`}>
+                <div className={`msg-avatar ${isContMsg ? 'msg-avatar--hidden' : ''} ${msg.messageRole === 'HOST' ? 'msg-avatar--host' : ''}`}>
                   {msg.senderNickname?.substring(0, 1) || "유"}
+                  {msg.messageRole === 'HOST' && <span className="msg-avatar__crown">👑</span>}
                 </div>
               )}
 
