@@ -1,4 +1,5 @@
 import '../../css/post-list.css';
+import ImageSlider from './ImageSlider.js';
 
 export default function PostCard({post, handleClick}) {
     // 게시글 제목, 작성자, 생성날짜, postInfo(좋아요, 댓글, 조회수)
@@ -16,7 +17,7 @@ export default function PostCard({post, handleClick}) {
         <article 
             className="post-card" 
             data-id={post.postId}
-            onClick={() => handleClick(post.postId)} // 클릭 시 해당 게시글의 ID를 넘겨줌
+            onClick={() => handleClick(post.postId)} 
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
@@ -24,11 +25,15 @@ export default function PostCard({post, handleClick}) {
                     handleClick(post.postId);
                 }
             }}
-            style={{ cursor: 'pointer' }} // 마우스 올렸을 때 손가락 모양 표시
+            style={{ cursor: 'pointer' }}
         >
             <div className="post-card__top">
+                {post.images && post.images.length > 0 && (
+                    <div className="post-card__image-container" style={{ marginBottom: '12px' }}>
+                        <ImageSlider images={post.images} />
+                    </div>
+                )}
                 <div className="post-card__body">
-                    
                     <h2 className="post-card__title">{truncatedTitle}</h2>
                 </div>
             </div>

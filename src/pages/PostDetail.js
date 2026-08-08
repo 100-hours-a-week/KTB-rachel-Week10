@@ -5,6 +5,7 @@ import Header from '../components/Header.js';
 import CommentSection from '../components/comment/commentSection.js'; 
 import PostStat from '../components/post/PostStat.js';
 import Modal from '../components/Modal.js';   
+import ImageSlider from '../components/post/ImageSlider.js';
 import { useAuth } from '../context/AuthContext.js';
 import useFetch from '../hooks/useFetch.js';
 import '../css/post-detail.css';
@@ -360,9 +361,11 @@ export default function PostDetail() {
             <hr className="post-article__divider" />
 
             <div className="post-article__content">
-              {post.images && post.images.map((img, idx) => (
-                img && <img key={idx} src={`/images/${img}`} alt="게시글 이미지" className="post-article__image" />
-              ))}
+              {post.images && post.images.length > 0 && (
+                <div style={{ marginBottom: '16px' }}>
+                  <ImageSlider images={post.images} />
+                </div>
+              )}
               <div className="post-article__paragraph">{post.content}</div>
             </div>
 

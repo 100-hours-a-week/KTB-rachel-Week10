@@ -1,4 +1,5 @@
 import React from 'react';
+import LeaveChatButton from './LeaveChatButton';
 
 export default function ChatSettingsMenu({
   isOpen,
@@ -12,6 +13,7 @@ export default function ChatSettingsMenu({
   onSave,
   isOwner,
   onDelete,
+  onLeave,
   participants,
   currentUserId
 }) {
@@ -30,47 +32,50 @@ export default function ChatSettingsMenu({
         </header>
 
         <div className="drawer-body">
-          <section className="drawer-section">
-            <h3 className="drawer-section__label">정보 수정</h3>
-            <div className="drawer-edit-form">
-              <div className="drawer-field">
-                <label className="drawer-field__label">채팅방 제목</label>
-                <input 
-                  type="text" 
-                  className="drawer-field__input" 
-                  value={title} 
-                  onChange={(e) => setTitle(e.target.value)} 
-                  placeholder="제목을 입력하세요"
-                />
+          {/* 방장에게만 보이는 정보 수정 폼 */}
+          {isOwner && (
+            <section className="drawer-section">
+              <h3 className="drawer-section__label">정보 수정</h3>
+              <div className="drawer-edit-form">
+                <div className="drawer-field">
+                  <label className="drawer-field__label">채팅방 제목</label>
+                  <input 
+                    type="text" 
+                    className="drawer-field__input" 
+                    value={title} 
+                    onChange={(e) => setTitle(e.target.value)} 
+                    placeholder="제목을 입력하세요"
+                  />
+                </div>
+                <div className="drawer-field">
+                  <label className="drawer-field__label">소제목</label>
+                  <input 
+                    type="text" 
+                    className="drawer-field__input" 
+                    value={subtitle} 
+                    onChange={(e) => setSubtitle(e.target.value)} 
+                    placeholder="소제목을 입력하세요"
+                  />
+                </div>
+                <div className="drawer-field">
+                  <label className="drawer-field__label">공지사항</label>
+                  <textarea 
+                    className="drawer-field__textarea" 
+                    value={notice} 
+                    onChange={(e) => setNotice(e.target.value)} 
+                    placeholder="공지사항을 입력하세요"
+                  />
+                </div>
+                <button 
+                  type="button" 
+                  className="drawer-btn-save" 
+                  onClick={onSave}
+                >
+                  저장하기
+                </button>
               </div>
-              <div className="drawer-field">
-                <label className="drawer-field__label">소제목</label>
-                <input 
-                  type="text" 
-                  className="drawer-field__input" 
-                  value={subtitle} 
-                  onChange={(e) => setSubtitle(e.target.value)} 
-                  placeholder="소제목을 입력하세요"
-                />
-              </div>
-              <div className="drawer-field">
-                <label className="drawer-field__label">공지사항</label>
-                <textarea 
-                  className="drawer-field__textarea" 
-                  value={notice} 
-                  onChange={(e) => setNotice(e.target.value)} 
-                  placeholder="공지사항을 입력하세요"
-                />
-              </div>
-              <button 
-                type="button" 
-                className="drawer-btn-save" 
-                onClick={onSave}
-              >
-                저장하기
-              </button>
-            </div>
-          </section>
+            </section>
+          )}
 
           <section className="drawer-section">
             <h3 className="drawer-section__label">참여 인원</h3>
@@ -109,6 +114,12 @@ export default function ChatSettingsMenu({
               </button>
             </section>
           )}
+
+          {/* 일반 유저(GENERAL)에게만 보이는 방 나가기 버튼 */}
+          {!isOwner && (
+            <LeaveChatButton onLeave={onLeave} />
+          )}
+
         </div>
       </aside>
     </>

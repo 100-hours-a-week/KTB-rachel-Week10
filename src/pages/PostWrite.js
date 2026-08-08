@@ -20,7 +20,7 @@ export default function PostWrite() {
   const { setValue: setTitleValue, setError: setTitleError } = titleInput;
   const contentInput = useInput("", validatePostContent);
   const { setValue: setContentValue, setError: setContentError } = contentInput;
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [chatData, setChatData] = useState({ createChat: false, title: '', summary: '' });
   
   const [postData, setPostData] = useState(null);
@@ -28,7 +28,6 @@ export default function PostWrite() {
   const isFormValid =
     titleInput.value.trim() !== '' && !titleInput.error &&
     contentInput.value.trim() !== '' && !contentInput.error;
-
 
   const { data: detailData, error: detailError } = useFetch(
     isEditMode ? `/posts/${postId}` : null,
@@ -43,8 +42,11 @@ export default function PostWrite() {
   // 기존 게시글 정보 로드 성공 시 input 값 설정
   useEffect(() => {
     if (detailData && detailData.data) {
+
+      console.log("게시글 조회 응답 DTO:", detailData);
       const fetchedTitle = detailData.data.title || '';
       const fetchedContent = detailData.data.content || '';
+      
       setTitleValue(fetchedTitle);
       setTitleError(validatePostTitle(fetchedTitle));
       setContentValue(fetchedContent);
@@ -119,9 +121,15 @@ export default function PostWrite() {
   // 이미지 선택 핸들러
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+      const filesArray = Array.from(e.target.files);
+      if (filesArray.length > 10) {
+        alert("이미지는 최대 10장까지만 첨부할 수 있습니다.");
+        setSelectedFiles(filesArray.slice(0, 10));
+      } else {
+        setSelectedFiles(filesArray);
+      }
     } else {
-      setSelectedFile(null);
+      setSelectedFiles([]);
     }
   };
 
@@ -160,8 +168,10 @@ export default function PostWrite() {
       } else {
         const formData = new FormData();
         
-        if (selectedFile) {
-          formData.append("file", selectedFile);
+        if (selectedFiles && selectedFiles.length > 0) {
+          selectedFiles.forEach(file => {
+            formData.append("files", file);
+          });
         }
         
         formData.append("request", new Blob([JSON.stringify(payload)], {
@@ -221,19 +231,20 @@ export default function PostWrite() {
 
           {/* 이미지 선택 구역 */}
           <div className="form-group margin-top-sm">
-            <label className="form-label">이미지</label>
+            <label className="form-label">이미지 ({selectedFiles.length}/10)</label>
             <div className="file-upload-wrapper">
               <input 
                 type="file" 
                 id="postImageInput" 
                 className="file-input" 
                 accept="image/*"
+                multiple
                 onChange={handleFileChange}
               />
             </div>
-            {selectedFile && (
+            {selectedFiles.length > 0 && (
               <span className="selected-file-info">
-                선택된 파일: {selectedFile.name}
+                선택된 파일: {selectedFiles.length}장
               </span>
             )}
           </div>

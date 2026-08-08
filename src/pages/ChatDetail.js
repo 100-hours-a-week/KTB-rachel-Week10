@@ -29,10 +29,11 @@ const formatDate = (date) => {
 const formatHistoryData = (historyChats) => {
     return historyChats.map(chat => ({
         messageId: chat.messageId || Date.now() + Math.random(),
-        type: 'TALK',
+        type: chat.chatRole,
         message: chat.message,
         senderId: chat.senderId,
         senderNickname: chat.senderNickname,
+        chatRoomId: chat.chatRoomId,
         chatRole: chat.chatRole,
         messageRole: chat.messageRole,
         sendTime: formatTime(new Date(chat.createdAt || Date.now())),
@@ -44,10 +45,11 @@ const formatHistoryData = (historyChats) => {
 const formatSocketMessage = (received) => {
     return {
         messageId: Date.now() + Math.random(),
-        type: 'TALK',
+        type: received.chatRole, 
         message: received.message,
         senderId: received.senderId,
         senderNickname: received.senderNickname, 
+        chatRoomId: received.chatRoomId,
         chatRole: received.chatRole,
         messageRole: received.messageRole,
         sendTime: formatTime(new Date()),
@@ -80,15 +82,35 @@ export default function ChatDetail() {
     const [isOwner, setIsOwner] = useState(false);
     const [participants, setParticipants] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
-    const handleSaveSettings = () => {
-        // 백엔드 API 연결 시 여기에 PUT/PATCH 요청을 추가하세요.
-        console.log("설정 저장됨:", { chatTitle, chatSubtitle, chatNoticeText });
-        setIsDrawerOpen(false);
+    const handleSaveSettings = async () => {
+        try {
+            const response = await fetch(`/chatrooms/${roomId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: chatTitle,
+                    summary: chatSubtitle,
+                    notice: chatNoticeText
+                })
+            });
+
+            if (response.ok) {
+                alert("채팅방 설정이 성공적으로 변경되었습니다.");
+                setIsDrawerOpen(false);
+            } else {
+                alert("설정 변경에 실패했습니다. 권한을 확인해주세요.");
+            }
+        } catch (error) {
+            console.error("채팅방 설정 변경 에러:", error);
+            alert("서버 오류가 발생했습니다.");
+        }
     };
 
     const confirmDeleteRoom = async () => {
-        // 현재 로그인한 사람이 방장이 맞는지 (isOwner) 한 번 더 확실하게 체크
         if (!isOwner) {
             alert("방장만 채팅방을 삭제할 수 있습니다.");
             setIsDeleteModalOpen(false);
@@ -96,20 +118,37 @@ export default function ChatDetail() {
         }
 
         try {
-            // 경로와 method는 실제 백엔드 API 명세에 맞게 수정해주세요
-            const response = await fetch(`/api/chatrooms/${roomId}`, { 
+            const response = await fetch(`/chatrooms/${roomId}`, { 
                 method: 'DELETE' 
             });
             
             if (response.ok) {
                 setIsDeleteModalOpen(false);
                 alert("채팅방이 삭제되었습니다.");
-                navigate('/posts'); // 강제 이동
+                navigate('/posts'); 
             } else {
                 alert("삭제 실패했습니다. 권한을 확인해주세요.");
             }
         } catch (error) {
             console.error("채팅방 삭제 에러:", error);
+        }
+    };
+
+    const confirmLeaveRoom = async () => {
+        try {
+            const response = await fetch(`/chatrooms/${roomId}/leave`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setIsLeaveModalOpen(false);
+                alert("채팅방을 나갔습니다.");
+                navigate('/posts');
+            } else {
+                alert("나가기 실패했습니다.");
+            }
+        } catch (error) {
+            console.error("채팅방 나가기 에러:", error);
         }
     };
 
@@ -160,8 +199,18 @@ export default function ChatDetail() {
                     console.log('소켓 연결 성공');
                     client.current.subscribe(`/subscribe/chat.${roomId}`, (message) => {
                         const received = JSON.parse(message.body);
-                        
+                        console.log("서버에서 전달받은 DTO:", received);
                         setMessages((prev) => [...prev, formatSocketMessage(received)]);
+                    });
+
+                    // 구독 완료 직후, 방에 처음 들어왔다는 입장 메시지를 백엔드에 전송
+                    client.current.publish({
+                        destination: `/publish/chat.enter.${roomId}`,
+                        body: JSON.stringify({ 
+                            messageId: crypto.randomUUID(),
+                            message: "ENTER", // 백엔드 Validation 통과용 임의 문자열
+                            senderId: currentUserId
+                        })
                     });
                 },
                 onStompError: (frame) => console.error('socket 에러 발생: ' + frame.body)
@@ -180,52 +229,54 @@ export default function ChatDetail() {
     }, [roomId]);
 
     useEffect(() => {
-        const pMap = new Map();
-        messages.forEach(msg => {
-            if (msg.senderId && msg.type === 'TALK') {
-                pMap.set(String(msg.senderId), {
-                    userId: String(msg.senderId),
-                    nickname: msg.senderNickname,
-                    messageRole: msg.messageRole // 백엔드의 MessageRole(HOST/GENERAL) 매핑
-                });
-            }
-        });
+        if (!isDrawerOpen) return;
 
-        if (hostId && !pMap.has(String(hostId))) {
-             pMap.set(String(hostId), {
-                 userId: String(hostId),
-                 nickname: String(hostId) === String(currentUserId) ? currentUserNickname : "방장", 
-                 messageRole: 'HOST'
-             });
-        }
-        if (currentUserId && !pMap.has(String(currentUserId))) {
-            pMap.set(String(currentUserId), {
-                userId: String(currentUserId),
-                nickname: currentUserNickname,
-                messageRole: String(hostId) === String(currentUserId) ? 'HOST' : 'GENERAL'
-            });
-        }
-        
-        const pList = Array.from(pMap.values()).sort((a, b) => {
-            if (a.messageRole === 'HOST' && b.messageRole !== 'HOST') return -1;
-            if (a.messageRole !== 'HOST' && b.messageRole === 'HOST') return 1;
-            return 0;
-        });
-        setParticipants(pList);
-    }, [messages, hostId, currentUserId, currentUserNickname]);
+        const fetchParticipants = async () => {
+            try {
+                const response = await fetch(`/chatrooms/${roomId}/participant`, {
+                    method: 'GET'
+                });
+                if (response.ok) {
+                    const data = (await response.json()).data;
+                    console.log("명단 API 응답 데이터:", data);
+                    
+                    if (data && data.participants) {
+                        console.log("참여자 목록:", data.participants);
+                        const pList = data.participants.sort((a, b) => {
+                            if (a.messageRole === 'HOST' && b.messageRole !== 'HOST') return -1;
+                            if (a.messageRole !== 'HOST' && b.messageRole === 'HOST') return 1;
+                            return 0;
+                        });
+                        setParticipants(pList);
+                    } else {
+                        console.log("data.participants가 존재하지 않음");
+                    }
+                } else {
+                    console.error("API 호출 실패:", response.status);
+                }
+            } catch (error) {
+                console.error("참여자 명단 조회 에러:", error);
+            }
+        };
+
+        fetchParticipants();
+    }, [isDrawerOpen, roomId]);
 
     const handleSend = () => {
         if (!inputText.trim() || !client.current || !client.current.connected) return;
 
         setInputText('');
 
+        const payload = { 
+            senderId: currentUserId,
+            messageId: crypto.randomUUID(),
+            message: inputText 
+        };
+        console.log("서버로 보내는 DTO:", payload);
+
         client.current.publish({
             destination: `/publish/chat.${roomId}`,
-            body: JSON.stringify({ 
-                // senderId: currentUserId,
-                // senderNickname: currentUserNickname,
-                message: inputText 
-            })
+            body: JSON.stringify(payload)
         });
     };
 
@@ -282,6 +333,7 @@ export default function ChatDetail() {
         onSave={handleSaveSettings}
         isOwner={isOwner}
         onDelete={() => setIsDeleteModalOpen(true)}
+        onLeave={() => setIsLeaveModalOpen(true)}
         participants={participants}
         currentUserId={currentUserId}
       />
@@ -293,6 +345,17 @@ export default function ChatDetail() {
          title="채팅방 삭제"
          subtitle="정말로 이 채팅방을 삭제하시겠습니까? (이 작업은 복구할 수 없습니다)"
          confirmText="삭제하기"
+         cancelText="취소"
+         isDanger={true}
+       />
+
+      <Modal 
+         isOpen={isLeaveModalOpen}
+         onClose={() => setIsLeaveModalOpen(false)}
+         onConfirm={confirmLeaveRoom}
+         title="채팅방 나가기"
+         subtitle="채팅방에서 나가시겠습니까? 나간 후에는 다시 초대받아야 참여할 수 있습니다."
+         confirmText="나가기"
          cancelText="취소"
          isDanger={true}
        />

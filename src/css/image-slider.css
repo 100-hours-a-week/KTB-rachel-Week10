@@ -1,0 +1,79 @@
+.image-slider-container {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+}
+
+.image-slider-track {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+  height: 100%;
+}
+
+.image-slider-slide {
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.image-slider-image {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+  display: block;
+}
+
+.image-slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.image-slider-btn:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.image-slider-btn.left {
+  left: 8px;
+}
+
+.image-slider-btn.right {
+  right: 8px;
+}
+
+.image-slider-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  z-index: 10;
+}
+
+.image-slider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.7);
+  transition: background-color 0.2s ease;
+}
+
+.image-slider-dot.active {
+  background-color: #007bff;
+}
